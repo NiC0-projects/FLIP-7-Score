@@ -156,8 +156,14 @@ body{
   gap:16px;
   padding-top:0;
   padding-bottom:8px;
-  -webkit-mask-image:linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
-  mask-image:linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
+}
+.setup-sticky-header{
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:var(--cream);
+  padding-bottom:2px;
+  margin-bottom:-20px;
 }
 
 /* ---------- Inputs / rows ---------- */
@@ -500,7 +506,27 @@ body{
 .done-btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--navy-2);}
 
 /* target picker rows reuse player-row style */
-#target-list{display:flex; flex-direction:column; gap:10px; margin-bottom:6px;}
+#target-sheet.target-sheet{
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  padding-left:20px;
+  padding-right:20px;
+  padding-bottom:0;
+}
+.target-static-header{
+  flex:0 0 auto;
+  background:var(--cream-soft);
+  margin:0 -20px;
+  padding:0 20px 4px;
+}
+.target-list, #target-list{
+  display:flex; flex-direction:column; gap:10px;
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  padding:6px 2px 6px;
+}
 .target-row{
   display:flex;align-items:center;gap:12px;
   padding:12px 14px;border-radius:16px;border:2.5px solid var(--navy);
@@ -511,6 +537,20 @@ body{
 .sheet-tall{max-height:94vh; max-height:94dvh; padding-bottom:130px; padding-left:0; padding-right:0;}
 #game-sheet .topbar h1{font-size:30px; line-height:1;}
 .game-topbar{align-items:flex-start; padding-bottom:2px; padding-top:0; justify-content:flex-start;}
+#game-sheet{
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  padding-bottom:20px;
+}
+.game-scroll{
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-top:8px;
+  padding-bottom:8px;
+}
 .topbar-title-group{
   display:flex;
   flex-direction:column;
@@ -658,6 +698,7 @@ body{
   animation:pop-in .3s ease;
 }
 .flip7-banner .f7-title{display:flex; align-items:center; gap:6px; font-size:15px;}
+.f7-star-icon{width:20px; height:20px; flex:0 0 auto; display:block;}
 .flip7-choice-row{display:flex; gap:8px;}
 .f7-choice-btn{
   flex:1;
@@ -683,10 +724,10 @@ body{
 }
 
 .footer-btns{
-  position:absolute;
-  left:20px; right:20px; bottom:26px;
+  flex:0 0 auto;
   display:flex;
   gap:12px;
+  padding:14px 20px 0;
 }
 .back-round-btn{
   flex:0 0 118px;
@@ -732,8 +773,6 @@ body{
   display:flex;
   flex-direction:column;
   padding-top:0;
-  -webkit-mask-image:linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
-  mask-image:linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
 }
 .scoreboard-list{
   display:flex; flex-direction:column; gap:12px;
@@ -796,7 +835,7 @@ body{
 }
 .next-round-btn{
   flex:0 0 auto;
-  margin:14px 20px 26px;
+  margin:0 20px 26px;
   background:var(--navy);
   color:var(--cream);
   border:none;
@@ -814,7 +853,7 @@ body{
   display:flex;
   justify-content:center;
   gap:8px;
-  padding:8px 20px 6px;
+  padding:8px 20px 0;
 }
 .deck-cat-btn{
   flex:1 1 0;
@@ -882,8 +921,12 @@ body{
   flex:1;
   min-height:0;
   overflow-y:auto;
-  -webkit-mask-image:linear-gradient(to bottom, transparent 0, black 10px, black calc(100% - 26px), transparent 100%);
-  mask-image:linear-gradient(to bottom, transparent 0, black 10px, black calc(100% - 26px), transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
+  -webkit-mask-repeat:no-repeat;
+  -webkit-mask-size:100% 100%;
+  mask-repeat:no-repeat;
+  mask-size:100% 100%;
 }
 .rules-body h3{
   font-size:17px;
@@ -1071,7 +1114,7 @@ body{
   line-height:1.15;
 }
 .winner-card{
-  margin:0 24px 22px;
+  margin:0 24px 0;
   background:var(--teal);
   border:3px solid var(--navy);
   border-radius:20px;
@@ -1128,8 +1171,6 @@ body{
   min-height:0;
   overflow-y:auto;
   overflow-x:hidden;
-  -webkit-mask-image:linear-gradient(to bottom, black 0, black calc(100% - 12px), transparent 100%);
-  mask-image:linear-gradient(to bottom, black 0, black calc(100% - 12px), transparent 100%);
 }
 .winner-header{
   position:sticky;
@@ -1163,7 +1204,7 @@ body{
 }
 .new-game-btn{
   flex:0 0 auto;
-  margin:14px 24px 26px;
+  margin:0 24px 26px;
   background:var(--navy);
   color:var(--cream);
   border:none;
@@ -2094,15 +2135,16 @@ input[type=number]{-moz-appearance:textfield;}
       </div>
       <div class="player-count-label" id="player-count-label">0 players · min 3 · max 18</div>
 
-      <div class="race-card">
-        <div class="race-label">Race to</div>
-        <div class="race-right">
-          <input type="number" id="race-to-input" class="race-input" value="200" min="1" step="1">
-          <button class="gear-btn" id="gear-btn" aria-label="Impostazioni">MODE</button>
-        </div>
-      </div>
-
       <div class="setup-scroll" id="setup-scroll">
+        <div class="setup-sticky-header">
+          <div class="race-card">
+            <div class="race-label">Race to</div>
+            <div class="race-right">
+              <input type="number" id="race-to-input" class="race-input" value="200" min="1" step="1">
+              <button class="gear-btn" id="gear-btn" aria-label="Impostazioni">MODE</button>
+            </div>
+          </div>
+        </div>
         <div class="players-list" id="players-list"></div>
         <div class="empty-hint" id="empty-hint">Add at least 3 players to start</div>
       </div>
@@ -2126,15 +2168,15 @@ input[type=number]{-moz-appearance:textfield;}
       <input type="number" id="total-input" class="total-input" placeholder="0">
     </div>
 
-    <div class="tap-label" id="tap-count-label">TAP CARDS · 0/7</div>
-    <div class="cards-grid" id="cards-grid-main"></div>
+    <div class="game-scroll" id="game-scroll">
+      <div class="tap-label" id="tap-count-label">TAP CARDS · 0/7</div>
+      <div class="cards-grid" id="cards-grid-main"></div>
 
-    <div id="flip7-banner-slot"></div>
+      <div id="flip7-banner-slot"></div>
 
-    <div class="tap-label">MODIFIERS</div>
-    <div class="mods-rows" id="mods-rows"></div>
-
-    <div class="helper-text">Tap cards to score this hand</div>
+      <div class="tap-label">MODIFIERS</div>
+      <div class="mods-rows" id="mods-rows"></div>
+    </div>
 
     <div class="footer-btns">
       <button class="back-round-btn" id="back-player-btn">Back</button>
@@ -2191,7 +2233,7 @@ input[type=number]{-moz-appearance:textfield;}
 
   <div class="sheet" id="settings-sheet">
     <div class="sheet-handle"></div>
-    <h2>Game rules</h2>
+    <h2>Game mode</h2>
     <div class="sheet-sub">CHOOSE HOW THIS GAME IS SCORED</div>
 
     <div class="option-card" id="opt-vengeance">
@@ -2223,11 +2265,13 @@ input[type=number]{-moz-appearance:textfield;}
     <button class="done-btn" id="settings-done-btn">Done</button>
   </div>
 
-  <div class="sheet" id="target-sheet">
-    <div class="sheet-handle"></div>
-    <h2>Choose target</h2>
-    <div class="sheet-sub">WHO LOSES 15 POINTS?</div>
-    <div id="target-list"></div>
+  <div class="sheet sheet-tall target-sheet" id="target-sheet">
+    <div class="target-static-header">
+      <div class="sheet-handle"></div>
+      <h2>Choose target</h2>
+      <div class="sheet-sub">WHO LOSES 15 POINTS?</div>
+    </div>
+    <div id="target-list" class="target-list"></div>
   </div>
 
   <div class="sheet sheet-half" id="action-cards-sheet">
@@ -2762,6 +2806,16 @@ input[type=number]{-moz-appearance:textfield;}
     return btn;
   }
 
+  const F7_STAR_ICON = `<svg class="f7-star-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M28 22 Q8 22 8 38 Q8 52 26 50" fill="none" stroke="#262D5E" stroke-width="6" stroke-linecap="round"/>
+    <path d="M72 22 Q92 22 92 38 Q92 52 74 50" fill="none" stroke="#262D5E" stroke-width="6" stroke-linecap="round"/>
+    <path d="M27 16 H73 V33 Q73 58 50 60 Q27 58 27 33 Z" fill="#D9A521" stroke="#262D5E" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M36 22 Q34 40 48 50" fill="none" stroke="#F0C24E" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+    <rect x="44" y="59" width="12" height="13" fill="#D9A521" stroke="#262D5E" stroke-width="5"/>
+    <rect x="30" y="71" width="40" height="9" rx="3" fill="#D9A521" stroke="#262D5E" stroke-width="5"/>
+    <rect x="37" y="80" width="26" height="9" rx="3" fill="#D9A521" stroke="#262D5E" stroke-width="5"/>
+  </svg>`;
+
   function renderFlip7Banner(entry) {
     flip7Slot.innerHTML = "";
     if (entry.cards.size !== 7) {
@@ -2773,12 +2827,12 @@ input[type=number]{-moz-appearance:textfield;}
     banner.className = "flip7-banner";
     if (!state.brutal) {
       entry.flip7Choice = "self";
-      banner.innerHTML = `<div class="f7-title">🏆 Flip 7! +15 points</div>`;
+      banner.innerHTML = `<div class="f7-title">${F7_STAR_ICON} Flip 7! +15 points</div>`;
       flip7Slot.appendChild(banner);
       return;
     }
     banner.innerHTML = `
-      <div class="f7-title">🏆 Flip 7! Choose the bonus</div>
+      <div class="f7-title">${F7_STAR_ICON} Flip 7! Choose the bonus</div>
       <div class="flip7-choice-row">
         <button class="f7-choice-btn" id="f7-self">+15 to me</button>
         <button class="f7-choice-btn" id="f7-target">-15 to opponent</button>
