@@ -1225,6 +1225,21 @@ body{
   box-shadow:0 5px 0 var(--navy-2);
 }
 .new-game-btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--navy-2);}
+.try-again-btn{
+  flex:0 0 auto;
+  margin:4px 24px 14px;
+  background:var(--cream);
+  color:var(--navy);
+  border:2.5px solid var(--navy);
+  border-radius:20px;
+  padding:14px;
+  font-family:var(--font);
+  font-weight:800;
+  font-size:28px;
+  cursor:pointer;
+  box-shadow:0 5px 0 var(--navy-2);
+}
+.try-again-btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--navy-2);}
 
 ::-webkit-scrollbar{width:0;height:0;}
 
@@ -1234,6 +1249,143 @@ input[type=number]{-moz-appearance:textfield;}
 .screen{animation:none;}
 #screen-setup.active,#screen-game.active,#screen-scoreboard.active,#screen-winner.active{animation:fade-in .32s ease;}
 @keyframes fade-in{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+/* ---------- Event Deck ---------- */
+#event-btn{width:100%;margin:0 0 12px;padding:7px 14px;border:2.5px solid var(--navy);border-radius:16px;background:#fff;color:var(--navy);font:800 15px var(--font);letter-spacing:.12em;cursor:pointer;transition:background .2s,color .2s}
+#event-btn.on{background:var(--pink);color:var(--cream)}
+#event-btn:disabled{background:var(--grey-disabled);color:var(--grey-disabled-ink);border-color:#DED4B4;cursor:default}
+#event-slot{padding:0 20px;margin:2px 0 4px}
+.event-pill{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:5px 12px;border:2.5px solid var(--navy);border-radius:14px;background:var(--pink);color:var(--cream);font:800 19px var(--font);letter-spacing:.06em;box-shadow:0 3px 0 var(--navy-2);cursor:pointer}
+.event-pill.pop{animation:evpop .5s}
+.event-pill i{font-style:normal;width:22px;height:22px;border-radius:50%;background:var(--cream);color:var(--navy);font-size:14px;display:inline-flex;align-items:center;justify-content:center}
+@keyframes evpop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+#event-layer{position:absolute;inset:0;z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow:hidden;background:rgba(29,35,72,.92);color:var(--cream);text-align:center}
+#event-layer.show{display:flex}
+#event-layer.clear{background:rgba(29,35,72,.35)}
+#event-layer.dim{background:rgba(29,35,72,.55)}
+.ev-title{font:800 28px/1 var(--font);letter-spacing:.06em;margin:0 0 8px}
+.ev-sub{font:600 15px var(--font);opacity:.85;margin:0 0 14px}
+.ev-card{width:100%;max-width:340px;max-height:78%;overflow-y:auto;background:var(--cream-soft);color:var(--navy);border:2.5px solid var(--navy);border-radius:22px;box-shadow:0 5px 0 var(--navy-2);padding:16px}
+.ev-card .ev-sub{color:var(--navy)}
+.ev-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;margin-top:6px;color:#fff;font:700 16px var(--font)}
+.ev-row b{margin-left:auto;white-space:nowrap}
+.ev-btn{margin-top:16px;width:100%;max-width:340px;background:var(--navy);color:var(--cream);border:none;border-radius:20px;padding:14px;font:700 20px var(--font);box-shadow:0 5px 0 var(--navy-2);cursor:pointer}
+.ev-btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--navy-2)}
+.ev-who{padding:6px 16px;border-radius:14px;border:2.5px solid var(--navy);color:#fff;font:800 20px var(--font);margin-bottom:18px;box-shadow:0 3px 0 var(--navy-2)}
+/* finestra nera centrale (Furto) */
+.ev-modal{width:100%;max-width:320px;max-height:80%;overflow-y:auto;background:#000;color:#fff;border:2.5px solid var(--cream-dim);border-radius:22px;box-shadow:0 6px 0 var(--navy-2);padding:18px 16px 16px;text-align:center}
+.ev-modal .ev-q{font:700 19px var(--font);margin:0 0 6px}
+.ev-pick{display:block;width:100%;margin:10px auto 0;padding:12px;border-radius:16px;border:2.5px solid;background:#000;color:#fff;font:700 21px var(--font);cursor:pointer}
+.ev-pick:active{transform:translateY(2px)}
+/* ----- introduzione uniforme ----- */
+#event-layer.intro{background:rgba(29,35,72,.93);box-shadow:inset 0 0 90px -10px var(--g,#fff)}
+#event-layer.ev-theft{background:rgba(0,0,0,.94)}
+#event-layer.ev-storm{background:rgba(14,18,48,.95)}
+#event-layer.ev-phoenix{background:radial-gradient(circle at 50% 105%,rgba(232,83,31,.6),rgba(29,35,72,.95) 70%)}
+.ev-chaos{--g:#E64E77}.ev-roulette,.ev-coin,.ev-jackpot{--g:#F1C84A}.ev-quake{--g:#C1502E}.ev-storm{--g:#7FC8FF}.ev-loser{--g:#C9CED6}.ev-flip{--g:#2EB7B1}.ev-duel{--g:#E64E77}.ev-theft{--g:#8a8a8a}.ev-phoenix{--g:#FF8A2B}
+.ev-fx{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.ev-name{position:relative;z-index:3;background:none;border:0;padding:14px 10px;color:var(--cream);font:800 clamp(40px,14vw,60px)/.95 var(--font);letter-spacing:.05em;text-shadow:0 4px 0 var(--navy-2),0 0 22px var(--g,#fff);cursor:pointer;animation:namein .6s cubic-bezier(.2,1.4,.4,1) both,namepulse 1.8s ease-in-out .7s infinite}
+.ev-name .tapdot{display:block;position:relative;margin:16px auto 0;width:28px;height:28px;border-radius:50%;border:3px solid var(--cream);box-shadow:0 2px 0 var(--navy-2)}
+.ev-name .tapdot::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:3px solid var(--cream);animation:ripple 1.4s ease-out infinite}
+@keyframes namein{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes namepulse{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+@keyframes ripple{from{transform:scale(1);opacity:.9}to{transform:scale(2.2);opacity:0}}
+/* Caos */
+.chip{position:absolute;padding:4px 12px;border-radius:12px;border:2.5px solid var(--navy);color:#fff;font:800 22px var(--font);box-shadow:0 3px 0 var(--navy-2);opacity:0;animation:chip 1.5s ease-in-out var(--d) infinite}
+@keyframes chip{0%{opacity:0;transform:scale(.2) rotate(0)}25%{opacity:1;transform:scale(1.15) rotate(var(--r))}50%{transform:translate(14px,-18px) scale(.95) rotate(calc(var(--r)*-1))}75%{opacity:1;transform:translate(-12px,10px) scale(1.1) rotate(var(--r))}100%{opacity:0;transform:scale(.3) rotate(0)}}
+/* Roulette (intro) */
+.rw{position:absolute;left:50%;top:50%;width:330px;height:330px;margin:-165px 0 0 -165px;border-radius:50%;border:9px solid var(--cream);box-shadow:0 0 0 4px var(--navy-2),0 8px 0 4px var(--navy-2);opacity:.55;animation:rwspin 3.2s cubic-bezier(.12,.62,.08,1) both}
+@keyframes rwspin{from{transform:rotate(-900deg) scale(.4);opacity:0}to{transform:rotate(0) scale(1);opacity:.55}}
+/* Terremoto */
+#app.quake{animation:quake .22s linear 7}
+@keyframes quake{0%,100%{transform:translate(0)}25%{transform:translate(-7px,4px) rotate(-.5deg)}50%{transform:translate(6px,-5px) rotate(.5deg)}75%{transform:translate(-4px,-3px)}}
+/* Tempesta */
+/* Fenice */
+/* Ribaltone */
+/* Duello */
+.sw{position:absolute;top:50%;margin-top:-170px;width:56px;height:224px;animation-duration:.9s;animation-fill-mode:both;animation-timing-function:cubic-bezier(.2,.9,.3,1)}
+.sw.l{left:50%;margin-left:-62px;transform:rotate(38deg);animation-name:swl}.sw.r{left:50%;margin-left:6px;transform:rotate(-38deg) scaleX(-1);animation-name:swr}
+@keyframes swl{from{transform:translateX(-160px) rotate(38deg);opacity:0}to{transform:rotate(38deg);opacity:1}}
+@keyframes swr{from{transform:translateX(160px) rotate(-38deg) scaleX(-1);opacity:0}to{transform:rotate(-38deg) scaleX(-1);opacity:1}}
+.spark{position:absolute;left:50%;top:50%;margin:-150px 0 0 -30px;width:60px;height:60px;opacity:0;animation:spark 1.6s ease-out .8s infinite}
+@keyframes spark{0%{opacity:1;transform:scale(.2)}40%{opacity:1;transform:scale(1.4) rotate(20deg)}100%{opacity:0;transform:scale(1.8) rotate(40deg)}}
+/* Furto */
+/* Terremoto: onde sismiche + sismografo */
+/* Fenice: vulcano */
+.vol{position:absolute;left:50%;bottom:0;width:340px;height:220px;margin-left:-170px}
+.vol .lava{fill:none;stroke-linecap:round;filter:drop-shadow(0 0 6px #FF8A2B)}
+.vol .flow{stroke-dasharray:70 330;animation:flow 1.8s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-400}}
+.vglow{position:absolute;left:50%;bottom:90px;width:380px;height:380px;margin-left:-190px;border-radius:50%;background:radial-gradient(rgba(255,138,43,.6),transparent 65%);animation:vg 1s ease-in-out infinite alternate}
+@keyframes vg{from{opacity:.5;transform:scale(.9)}to{opacity:1;transform:scale(1.1)}}
+/* Furto: fari e occhi nel buio */
+.sflash{position:absolute;inset:0;background:#cfe8ff;opacity:0;animation:sflash 2.6s linear infinite}
+.sflash.b{background:#fff;mix-blend-mode:screen;animation-duration:3.3s;animation-delay:-1.3s}
+@keyframes sflash{0%,100%{opacity:0}3%{opacity:.6}5%{opacity:.05}8%{opacity:.8}11%{opacity:0}45%{opacity:0}47%{opacity:.45}49%{opacity:0}51%{opacity:.7}53%{opacity:.1}55%{opacity:.5}58%{opacity:0}}
+.jet{position:absolute;left:50%;bottom:162px;width:108px;height:calc(100% - 162px);margin-left:-54px;box-sizing:border-box;border:4px solid #262D5E;border-bottom:0;background:repeating-linear-gradient(to top,#E8531F 0 44px,#EE6428 44px 88px);background-size:100% 88px;transform-origin:50% 100%;animation:jetrise .8s ease-out both,jetup .9s linear infinite}
+.jet i{position:absolute;left:50%;bottom:0;top:0;width:72px;margin-left:-36px;background:repeating-linear-gradient(to top,#FFC83D 0 44px,#FFD25A 44px 88px);background-size:100% 88px;animation:jetup .6s linear infinite}
+@keyframes jetup{to{background-position:0 -88px}}
+@keyframes jetrise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.beam{position:absolute;left:50%;top:-6%;width:300px;height:115%;margin-left:-150px;transform-origin:50% 0;clip-path:polygon(46% 0,54% 0,100% 100%,0 100%);background:linear-gradient(rgba(255,244,190,.5),rgba(255,244,190,0));animation:sweep 3.2s ease-in-out infinite alternate}
+@keyframes sweep{from{transform:rotate(-38deg)}to{transform:rotate(38deg)}}
+/* Ribaltone: colonne che cambiano altezza (senza rotazione) */
+.rb{position:absolute;left:50%;top:50%;margin:-170px 0 0 -70px;display:flex;align-items:flex-end;gap:8px;height:130px}
+.rb b{width:36px;height:var(--a);border:2.5px solid var(--navy);border-radius:8px 8px 0 0;box-shadow:0 3px 0 var(--navy-2);animation:rbh 1.7s cubic-bezier(.6,0,.3,1) infinite alternate}
+@keyframes rbh{from{height:var(--a)}to{height:var(--b)}}
+/* Monete 3D */
+.c3w{width:var(--s);height:var(--s);perspective:900px;filter:drop-shadow(0 6px 5px rgba(20,24,50,.4))}
+.c3{--t:calc(var(--s)*.07);position:relative;width:100%;height:100%;transform-style:preserve-3d;animation:c3spin 1.8s linear infinite}
+.c3.static{animation:none;transform:rotateX(-16deg) rotateY(0)}
+.c3 i,.c3 b{position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.c3 i{background:conic-gradient(from 20deg,#8A5E10,#F6D56A,#B98319,#FFF0A6,#8A5E10,#F6D56A,#B98319,#8A5E10);transform:translateZ(calc(var(--z)*var(--t)/3))}
+.c3 b{backface-visibility:hidden;overflow:hidden;background:radial-gradient(circle at 32% 28%,#FFF3B0,#F1C84A 45%,#C48A1C 80%,#9A6A12);box-shadow:inset 0 0 0 calc(var(--s)*.035) #B98319,inset 0 0 0 calc(var(--s)*.06) rgba(255,243,176,.65),inset 0 0 calc(var(--s)*.12) rgba(110,70,5,.5);transform:translateZ(var(--t))}
+.c3 b.back{transform:rotateY(180deg) translateZ(var(--t))}
+.c3 b span{font:800 calc(var(--s)*.25)/.95 var(--font);color:#8A5A0B;text-align:center;text-shadow:0 1px 0 rgba(255,245,190,.95),0 -1px 0 rgba(90,55,5,.45)}
+.c3 b::after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.7) 48%,transparent 60%);background-size:260% 100%;animation:shine 2.4s linear infinite}
+.c3.silver i{background:conic-gradient(from 20deg,#6B7280,#F4F6F9,#9AA1AD,#FFFFFF,#6B7280,#F4F6F9,#9AA1AD,#6B7280)}
+.c3.silver b{background:radial-gradient(circle at 32% 28%,#FFFFFF,#D5DAE2 45%,#9AA1AD 80%,#6F7784);box-shadow:inset 0 0 0 calc(var(--s)*.035) #8E96A3,inset 0 0 0 calc(var(--s)*.06) rgba(255,255,255,.75),inset 0 0 calc(var(--s)*.12) rgba(60,66,80,.5)}
+.c3.silver b span{color:#566071;text-shadow:0 1px 0 rgba(255,255,255,.95),0 -1px 0 rgba(40,46,60,.4)}
+@keyframes c3spin{from{transform:rotateX(62deg) rotateZ(var(--rz,0deg)) rotateY(0)}to{transform:rotateX(62deg) rotateZ(var(--rz,0deg)) rotateY(360deg)}}
+@keyframes shine{from{background-position:130% 0}to{background-position:-130% 0}}
+.fall{position:absolute;top:-80px;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(120vh)}}
+.cj{position:absolute;left:50%;top:50%;margin:-210px 0 0 -62px;animation:cjump 1.6s ease-in-out infinite}
+@keyframes cjump{0%,100%{transform:translateY(60px) scale(.9)}50%{transform:translateY(-30px) scale(1.1)}}
+.cstap{cursor:pointer;animation:cjump2 1.8s ease-in-out infinite}
+@keyframes cjump2{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+/* Ruota */
+.wheel-box{position:relative;width:310px;height:310px;cursor:pointer}
+.wheel-box::before{content:"";position:absolute;inset:8px 0 -8px;border-radius:50%;background:var(--navy-2)}
+.wheel-rot{position:relative;width:100%;height:100%;will-change:transform}
+.wheel-ptr{position:absolute;left:50%;top:-20px;width:34px;height:38px;margin-left:-17px;z-index:2;filter:drop-shadow(0 3px 0 var(--navy-2))}
+.wheel-box.idle .wheel-ptr{animation:pbob .7s ease-in-out infinite alternate}
+@keyframes pbob{to{transform:translateY(5px)}}
+.scoreboard-scroll{overflow:hidden !important}
+.scoreboard-list.fit{display:grid;grid-auto-flow:column;align-content:start;gap:var(--gap,12px)}
+.scoreboard-list.fit .score-row{height:var(--rh);padding-top:0;padding-bottom:0;animation:none}
+.scoreboard-list.fit .p-name{font-size:var(--nf);-webkit-text-stroke:calc(var(--nf)*.29) var(--navy);line-height:1.15;padding-top:2px}
+.scoreboard-list.fit .p-score{font-size:var(--sf);-webkit-text-stroke:calc(var(--sf)*.16) var(--navy)}
+.scoreboard-list.fit .remain-pill{font-size:var(--pf);font-weight:800;padding:0 8px;border-radius:9px;margin-top:1px;line-height:1.3}
+.scoreboard-list.sc2{padding:13px 12px 22px}.scoreboard-list.sc3{padding:13px 8px 22px}
+.scoreboard-list.sc2 .score-row{padding-left:8px;padding-right:8px;gap:6px;border-width:3px}
+.scoreboard-list.sc2 .badge{min-width:26px;height:26px;font-size:14px}
+.scoreboard-list.sc3 .score-row{display:grid;grid-template-columns:auto 1fr auto;column-gap:5px;align-items:center;padding-left:6px;padding-right:6px;border-width:2.5px;border-radius:14px}
+.scoreboard-list.sc3 .score-row-mid{display:contents}
+.scoreboard-list.sc3 .badge{grid-row:1/3;min-width:20px;height:20px;font-size:11px;border-width:2px}
+.scoreboard-list.sc3 .p-name{grid-column:2/4;grid-row:1}
+.scoreboard-list.sc3 .remain-pill{grid-column:2;grid-row:2;align-self:center;justify-self:start}
+.scoreboard-list.sc3 .p-score{grid-column:3;grid-row:2;text-align:right}
+.ev-pick{display:flex !important;align-items:center;justify-content:space-between;gap:10px}
+.pk-n{flex:1;min-width:0;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-s{font-size:16px;font-weight:600;opacity:.85;white-space:nowrap}
+/* Finestra informativa evento */
+#ev-info{position:absolute;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(29,35,72,.6)}
+#ev-info.show{display:flex}
+.evi-card{position:relative;width:100%;max-width:340px;background:var(--cream-soft);color:var(--navy);border:2.5px solid var(--navy);border-radius:22px;box-shadow:0 6px 0 var(--navy-2);padding:22px 20px 18px;text-align:center;animation:evpop .3s}
+.evi-card h2{margin:0 24px 8px;font:800 24px/1.05 var(--font);letter-spacing:.04em;color:var(--pink)}
+.evi-card p{margin:0;font:600 15px/1.45 var(--font)}
+.evi-x{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;border:2.5px solid var(--navy);background:#fff;color:var(--navy);font:800 18px var(--font);line-height:1;cursor:pointer;box-shadow:0 2px 0 var(--navy-2)}
+.rules-body ul{margin:2px 0 6px;padding-left:20px}
 </style>
 </head>
 <body>
@@ -2169,6 +2321,7 @@ input[type=number]{-moz-appearance:textfield;}
         <div class="round-sub" id="round-sub">PLAYER 1 OF 2</div>
       </div>
     </div>
+    <div id="event-slot"></div>
     <div class="player-tag"><span class="dot" id="player-tag-dot"></span><span id="player-tag-name"></span></div>
 
     <div class="total-row">
@@ -2233,11 +2386,14 @@ input[type=number]{-moz-appearance:textfield;}
       </div>
       <div class="rank-list" id="rank-list"></div>
     </div>
+    <button class="try-again-btn" id="try-again-btn">Try Again</button>
     <button class="new-game-btn" id="new-game-btn">New Game</button>
   </section>
 
   <!-- overlay + settings sheet -->
   <div id="overlay"></div>
+  <div id="event-layer"></div>
+  <div id="ev-info"><div class="evi-card"><button class="evi-x" id="evi-x" type="button" aria-label="Chiudi">✕</button><h2 id="evi-title"></h2><p id="evi-desc"></p></div></div>
 
   <div class="sheet" id="settings-sheet">
     <div class="sheet-handle"></div>
@@ -2269,6 +2425,8 @@ input[type=number]{-moz-appearance:textfield;}
         <div class="switch" id="switch-brutal"><div class="knob"></div></div>
       </div>
     </div>
+
+    <button id="event-btn" type="button">EVENT DECK</button>
 
     <button class="done-btn" id="settings-done-btn">Done</button>
   </div>
@@ -2336,7 +2494,10 @@ input[type=number]{-moz-appearance:textfield;}
 
       <h3>Brutal Mode</h3>
       <p>Variante opzionale di <i>With a Vengeance</i> pensata per rendere il gioco ancora più cattivo. In questa modalità i punteggi ottenuti durante un round possono scendere sotto lo zero e i Modifier possono essere utilizzati anche contro giocatori già andati in Bust.</p>
-      <p>Inoltre, quando un giocatore realizza un <b>Flip 7</b>, può scegliere se ottenere normalmente il bonus di <b>+15 punti</b> oppure infliggere <b>−15 punti</b> a un altro giocatore.</p>
+      <p>Inoltre, quando un giocatore realizza un <b>Flip 7</b>, può scegliere se ottenere normalmente il bonus di <b>+15 punti</b> oppure infliggere <b>−25 punti</b> a un altro giocatore.</p>
+      <h3>Event Deck</h3>
+      <p>L’Event Deck è una modalità aggiuntiva che introduce eventi casuali durante la partita, modificando le dinamiche di gioco</p>
+
     </div>
   </div>
 
@@ -2380,7 +2541,12 @@ input[type=number]{-moz-appearance:textfield;}
     round: 0,
     roundPlayerIndex: 0,
     roundEntries: {},       // playerId -> entryState for the round in progress
-    finishedRoundScores: {} // playerId -> score already locked in this round
+    finishedRoundScores: {}, // playerId -> score already locked in this round
+    eventDeck: false,
+    evGap: 0,               // round consecutivi senza evento
+    evW: {},                // pesi correnti degli eventi
+    event: null,            // evento attivo/pendente: {type, pre, applied, data}
+    finishing: false
   });
 
   let state = defaultState();
@@ -2536,6 +2702,7 @@ input[type=number]{-moz-appearance:textfield;}
   startGameBtn.addEventListener("click", () => {
     if (state.players.length < 3) return;
     state.turnOrder = state.players.map(p => p.id);
+    state.event = null; state.evGap = 0; state.evW = {};
     state.round = 0;
     state.players.forEach(p => p.total = 0);
     renderScoreboard();
@@ -2644,11 +2811,275 @@ input[type=number]{-moz-appearance:textfield;}
     brutalWrap.classList.toggle("show", showBrutal);
     if (!showBrutal) state.brutal = false;
     switchBrutal.classList.toggle("on", state.brutal);
+    evBtn.disabled = false;   // Event Deck sempre attivabile
+    evBtn.classList.toggle("on", state.eventDeck);
   }
+  const evBtn = $("#event-btn");
+  evBtn.addEventListener("click", () => {
+    if (evBtn.disabled) return;
+    state.eventDeck = !state.eventDeck;
+    syncSettingsUI();
+  });
 
   $("#settings-done-btn").addEventListener("click", () => {
     closeSheet(settingsSheet);
   });
+
+
+    /* ---------------- Event Deck ---------------- */
+  // ===== PARAMETRI DI BILANCIAMENTO (facili da modificare) =====
+  const EVENT_CFG = {
+    chance: 0.40,       // probabilità generale che un round attivi un evento (indipendente dal resto)
+    maxGap: 3,          // max round consecutivi senza evento: al raggiungimento l'evento è obbligatorio
+    startWeight: 1.0,   // peso iniziale di ogni evento (100%)
+    dropTo: 0.80,       // peso dell'evento appena estratto (80%)
+    recoverStep: 0.05   // recupero di peso a ogni round in cui l'evento non viene estratto (fino al 100%)
+  };
+  const EVENTS = [
+    ["chaos","CAOS","Tutti i modificatori positivi e negativi del round valgono il doppio (+5 diventa +10, −5 diventa −10). ×2 e ÷2 restano invariati."],
+    ["roulette","ROULETTE","Prima del round gira la ruota: il giocatore estratto riceve subito +15 punti in classifica generale."],
+    ["coin","TESTA E CROCE","Il primo giocatore del round lancia la moneta: se esce FLIP 7 guadagna +10 punti in classifica, se esce la faccia vuota non succede nulla."],
+    ["quake","TERREMOTO","Penalità in classifica in base alla posizione: più sei in alto, più perdi. I pari merito subiscono la stessa penalità."],
+    ["storm","TEMPESTA","A fine round il punteggio ottenuto da ciascun giocatore in questo round cambia segno (+12 diventa −12). Il totale in classifica non viene invertito."],
+    ["jackpot","JACKPOT","Il primo giocatore del round riceve +15 punti in classifica generale."],
+    ["loser","JACKPOT DEL PERDENTE","Alla fine del round ogni giocatore che ha fatto bust (0 punti) riceve +15 punti in classifica generale."],
+    ["flip","RIBALTONE","Il primo in classifica perde 10 punti, l'ultimo riceve +20. Si applica sempre, anche se l'ultimo ha fatto bust."],
+    ["duel","DUELLO","Coppie casuali: a fine round chi ha il punteggio più alto riceve +10, in caso di pareggio +5 a entrambi. Chi resta senza avversario riceve +5."],
+    ["theft","FURTO","A fine round il primo giocatore sceglie un avversario e gli ruba 10 punti in classifica."],
+    ["phoenix","FENICE","Se il primo giocatore del round fa bust, ruba punti a tutti gli altri (anche sotto zero): 3 giocatori −5 a testa, 4 −4, 5–6 −3, 7–10 −2, 11+ −1. Il primo incassa il totale."],
+  ].map(([id, name, desc]) => ({ id, name, desc }));
+  const BIG = { coin: "TESTA<br>E CROCE", loser: "JACKPOT<br>DEL PERDENTE" };
+
+  const layer = $("#event-layer");
+  let evBusy = false, infoOpen = false;
+  const rnd = (n) => Math.floor(Math.random() * n);
+  const R = (a, b) => +(a + Math.random() * (b - a)).toFixed(2);
+  const shuffle = (a) => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const P = (id) => state.players.find(p => p.id === id);
+  const add = (id, d) => { const p = P(id), b = p.total; p.total += d; if (!state.brutal && p.total < 0) p.total = 0; return p.total - b; };   // senza Brutal Mode il totale non scende sotto 0; ritorna la variazione reale
+  const fmt = (d) => (d > 0 ? "+" : d < 0 ? "−" : "") + Math.abs(d);
+  const eventsActive = () => state.eventDeck;
+  const evIs = (t) => !!state.event && state.event.type === t && eventsActive();
+  const row = (id, d, right) => ({ color: P(id).color, name: P(id).name, right: right !== undefined ? right : fmt(d) });
+  const quakeK = (n) => n <= 6 ? [0,0,0,5,4,3,3][n] : n <= 10 ? 2 : 1; // penalità per posizione (anche per Fenice)
+  // Penalità Terremoto: rank con pari merito (competition ranking), ultimo = k, +k per ogni posizione.
+  function quakeDeltas(ps) {
+    const n = ps.length, k = quakeK(n);
+    return ps.map(p => ({ id: p.id, d: -k * (n - (1 + ps.filter(o => o.total > p.total).length) + 1) })).sort((a, b) => a.d - b.d);
+  }
+  const isBust = (entry, total) => total === 0 &&
+    !(state.scoringMode !== "standard" && entry.cards.has(0) && entry.cards.size !== 7 && entry.manualTotal === null);
+
+  function openLayer(mode, html) { layer.className = "show " + (mode || ""); layer.innerHTML = html || ""; evBusy = true; }
+  function closeLayer() { layer.className = ""; layer.innerHTML = ""; evBusy = false; }
+  function showCard(title, sub, rows, done, mode) {
+    openLayer(mode, `<div class="ev-card"><div class="ev-title">${title}</div>${sub ? `<div class="ev-sub">${sub}</div>` : ""}${rows.map(r => `<div class="ev-row" style="background:${r.color}"><span>${escapeHtml(r.name)}</span><b>${r.right}</b></div>`).join("")}</div><button class="ev-btn" id="ev-ok">Continua</button>`);
+    $("#ev-ok").onclick = () => { closeLayer(); if (done) done(); };
+  }
+  const applyOnce = (ev, k, fn) => { if (ev.applied[k]) return false; ev.applied[k] = 1; fn(); return true; };
+
+  /* ----- Moneta 3D: spessore (strati del bordo), facce metalliche con riflesso, rotazione 3D ----- */
+  const coin3d = (s, silver, cls, rz) => `<div class="c3w" style="--s:${s}px${rz === undefined ? "" : `;--rz:${rz}deg`}"><div class="c3${silver ? " silver" : ""} ${cls || ""}">${[-3,-2,-1,0,1,2,3].map(z => `<i style="--z:${z}"></i>`).join("")}<b class="front"><span>FLIP<br>7</span></b><b class="back"></b></div></div>`;
+  const coinRain = (silver) => { let h = ""; for (let i = 0; i < 26; i++) h += `<div class="fall" style="left:${rnd(92)}%;animation-duration:${R(2.2, 4)}s;animation-delay:-${R(0, 3)}s">${coin3d(34 + rnd(30), silver, "", rnd(60) - 30)}</div>`; return h; };
+
+  /* ----- Estrazione: probabilità 40% + tetto ai round senza evento + pesi dinamici ----- */
+  function drawEvent(hadEvent) {   // chiamata a fine round per il round successivo
+    state.event = null;
+    if (!eventsActive()) return;
+    const W = state.evW, w = (id) => W[id] === undefined ? EVENT_CFG.startWeight : W[id];
+    state.evGap = hadEvent ? 0 : state.evGap + 1;
+    let pick = null;
+    if (state.evGap >= EVENT_CFG.maxGap || Math.random() < EVENT_CFG.chance) {
+      let r = Math.random() * EVENTS.reduce((s, e) => s + w(e.id), 0);
+      pick = EVENTS.find(e => (r -= w(e.id)) < 0) || EVENTS[EVENTS.length - 1];
+    }
+    EVENTS.forEach(e => { W[e.id] = Math.min(EVENT_CFG.startWeight, w(e.id) + EVENT_CFG.recoverStep); }); // recupero graduale
+    if (pick) {
+      W[pick.id] = EVENT_CFG.dropTo;      // calo del peso (non esclusione)
+      state.evGap = 0;
+      state.event = { type: pick.id, pre: false, intro: false, applied: {}, data: {} };
+    }
+  }
+
+  /* ----- Nome evento in alto + finestra informativa ----- */
+  function renderEventBanner() {
+    const slot = $("#event-slot"), ev = state.event;
+    slot.innerHTML = "";
+    if (!ev || !ev.intro || !eventsActive()) return;     // compare solo dopo il tocco sul nome centrale
+    const d = EVENTS.find(e => e.id === ev.type);
+    const b = document.createElement("button");
+    b.className = "event-pill" + (ev.shownIn !== state.round ? " pop" : "");
+    ev.shownIn = state.round;
+    b.innerHTML = escapeHtml(d.name);
+    b.onclick = () => openEvInfo(d);
+    slot.appendChild(b);
+  }
+  const evInfo = $("#ev-info");
+  function openEvInfo(d) { if (infoOpen) return; infoOpen = true; $("#evi-title").textContent = d.name; $("#evi-desc").textContent = d.desc; evInfo.classList.add("show"); }
+  function closeEvInfo() { infoOpen = false; evInfo.classList.remove("show"); }   // non tocca mai stato ed effetti
+  $("#evi-x").onclick = closeEvInfo;
+  evInfo.onclick = (e) => { if (e.target === evInfo) closeEvInfo(); };
+
+  /* ----- Animazioni introduttive (una per evento, stessa struttura) ----- */
+  const sword = `<svg viewBox="0 0 40 160" width="56" height="224"><path d="M20 0L28 20V110H12V20Z" fill="#E4E9F2" stroke="#262D5E" stroke-width="3" stroke-linejoin="round"/><rect x="3" y="108" width="34" height="9" rx="3" fill="#F1C84A" stroke="#262D5E" stroke-width="3"/><rect x="15" y="117" width="10" height="28" rx="3" fill="#E64E77" stroke="#262D5E" stroke-width="3"/><circle cx="20" cy="150" r="7" fill="#F1C84A" stroke="#262D5E" stroke-width="3"/></svg>`;
+  const zig = (x, y, step, jx) => { const p = []; for (let j = 0; j < 12; j++) { p.push(`${x | 0},${y | 0}`); x += rnd(jx * 2) - jx; y += step + rnd(step); } return p.join(" "); };
+  const ANIM = {
+    chaos: () => { const L = ["+2","+4","+6","+8","+10","−2","−4","−6","−8","−10"]; let h = ""; for (let i = 0; i < 22; i++) h += `<span class="chip" style="left:${R(2, 84)}%;top:${R(2, 90)}%;--r:${R(-40, 40)}deg;--d:${R(0, 1.4)}s;background:${i % 2 ? "#E64E77" : "#2EB7B1"}">${L[rnd(10)]}</span>`; return h; },
+    roulette: (ps) => `<div class="rw" style="background:conic-gradient(${ps.map((p, i) => `${p.color} ${i * 100 / ps.length}% ${(i + 1) * 100 / ps.length}%`).join(",")})"></div>`,
+    coin: () => `<div class="cj">${coin3d(124, false)}</div>`,
+    quake: () => "",
+    storm: () => `<div class="sflash"></div><div class="sflash b"></div>`,
+    jackpot: () => coinRain(false),
+    loser: () => coinRain(true),
+    flip: () => `<div class="rb"><b style="--a:42px;--b:122px;background:#2EB7B1"></b><b style="--a:118px;--b:50px;background:#F1C84A"></b><b style="--a:70px;--b:100px;background:#E64E77"></b></div>`,
+    duel: () => `<div class="sw l">${sword}</div><div class="sw r">${sword}</div><svg class="spark" viewBox="0 0 60 60"><path d="M30 0L36 24L60 30L36 36L30 60L24 36L0 30L24 24Z" fill="#FFF7B0" stroke="#F1C84A" stroke-width="2"/></svg>`,
+    theft: () => `<div class="beam"></div><div class="beam" style="animation-delay:-1.6s;animation-direction:alternate-reverse"></div>`,
+    phoenix: () => { return `<div class="vglow"></div><div class="jet"><i></i></div><svg class="vol" viewBox="0 0 340 220"><path d="M0 220L118 62Q170 44 222 62L340 220Z" fill="#4A2B3A" stroke="#262D5E" stroke-width="4" stroke-linejoin="round"/><ellipse cx="170" cy="58" rx="54" ry="14" fill="#E8531F" stroke="#262D5E" stroke-width="4"/><ellipse cx="170" cy="58" rx="36" ry="8" fill="#FFC83D"/></svg>`; },
+  };
+
+  // Introduzione identica per tutti: nome grande al centro (cliccabile) + animazione. Al tocco: sparisce
+  // tutto e il nome resta in alto come promemoria. Poi (se previsto) prosegue l'evento.
+  function intro(ev, anim, next) {
+    const d = EVENTS.find(e => e.id === ev.type);
+    openLayer("intro ev-" + ev.type, `<div class="ev-fx">${anim}</div><button class="ev-name" id="ev-name" type="button">${BIG[ev.type] || escapeHtml(d.name)}<span class="tapdot"></span></button>`);
+    if (ev.type === "quake") {
+      $("#app").classList.add("quake");
+      if (navigator.vibrate) { try { navigator.vibrate([90, 50, 90, 50, 150, 50, 90]); } catch (e) {} }
+    }
+    $("#ev-name").onclick = () => {
+      $("#app").classList.remove("quake");
+      ev.intro = true; closeLayer(); renderEventBanner();
+      if (next) next();
+    };
+  }
+
+  // Fase iniziale (prima dell'inserimento dei punteggi). Eseguita una sola volta per evento.
+  function runPre() {
+    const ev = state.event;
+    if (!ev || ev.pre || !eventsActive()) { evBusy = false; return; }
+    ev.pre = true;
+    const first = state.turnOrder[0], fp = P(first), ps = state.players;
+    const next = {
+      roulette: () => wheelStage(ev, ps),
+      coin: () => coinStage(ev, first, fp),
+      quake: () => { const ds = quakeDeltas(ps); applyOnce(ev, "q", () => ds.forEach(x => { x.d = add(x.id, x.d); })); showCard("TERREMOTO", "", ds.map(x => row(x.id, x.d))); },
+      jackpot: () => { applyOnce(ev, "j", () => add(first, 15)); showCard("JACKPOT", "", [row(first, 15)]); },
+      flip: () => {
+        const mx = Math.max(...ps.map(p => p.total)), mn = Math.min(...ps.map(p => p.total)), d = {};
+        ps.forEach(p => { d[p.id] = (p.total === mx ? -10 : 0) + (p.total === mn ? 20 : 0); });
+        const pl = { ...d };
+        applyOnce(ev, "f", () => ps.forEach(p => { d[p.id] = add(p.id, d[p.id]); }));
+        showCard("RIBALTONE", "", ps.filter(p => pl[p.id]).map(p => row(p.id, d[p.id])));
+      },
+      duel: () => {
+        const o = shuffle(ps.map(p => p.id)), ex = o.length % 2 ? o.pop() : null, pairs = [];
+        for (let i = 0; i < o.length; i += 2) pairs.push([o[i], o[i + 1]]);
+        ev.data.pairs = pairs; ev.data.ex = ex;
+        openLayer("", pairsHtml(ev, null) + `<button class="ev-btn" id="ev-ok">Inizia</button>`);
+        $("#ev-ok").onclick = closeLayer;
+      },
+    }[ev.type];
+    intro(ev, ANIM[ev.type](ps), next);
+  }
+
+  // Ruota nello stile dell'app: bordo crema/navy, bulloni oro, spicchi con i colori dei giocatori, font Baloo 2.
+  function wheelStage(ev, ps) {
+    const n = ps.length, seg = 360 / n, fs = n <= 6 ? 15 : n <= 10 ? 13 : n <= 14 ? 11 : 9.5;
+    const pt = (a, r) => `${155 + r * Math.sin(a)},${155 - r * Math.cos(a)}`;
+    let studs = ""; for (let i = 0; i < 24; i++) { const a = i * Math.PI / 12; studs += `<circle cx="${(155 + 141 * Math.sin(a)).toFixed(1)}" cy="${(155 - 141 * Math.cos(a)).toFixed(1)}" r="4" fill="${i % 2 ? "#262D5E" : "#F1C84A"}"/>`; }
+    const svg = ps.map((p, i) => {
+      const a0 = i * seg * Math.PI / 180, a1 = (i + 1) * seg * Math.PI / 180, nm = p.name.length > 10 ? p.name.slice(0, 9) + "…" : p.name;
+      return `<path d="M155,155 L${pt(a0, 127)} A127,127 0 0 1 ${pt(a1, 127)} Z" fill="${p.color}" stroke="#262D5E" stroke-width="2.5" stroke-linejoin="round"/>` +
+        `<g transform="rotate(${(i + .5) * seg} 155 155)"><text x="155" y="37" transform="rotate(-90 155 37)" text-anchor="end" dominant-baseline="central" font-family="Baloo 2" font-weight="800" font-size="${fs}" fill="#FAF1DD" stroke="#262D5E" stroke-width="3" paint-order="stroke">${escapeHtml(nm)}</text></g>`;
+    }).join("");
+    openLayer("", `<div class="wheel-box idle"><svg class="wheel-ptr" viewBox="0 0 40 44"><path d="M4 4H36L20 40Z" fill="#F1C84A" stroke="#262D5E" stroke-width="4" stroke-linejoin="round"/></svg><div class="wheel-rot" id="wheel"><svg viewBox="0 0 310 310"><circle cx="155" cy="155" r="152" fill="#FAF1DD" stroke="#262D5E" stroke-width="4"/><circle cx="155" cy="155" r="130" fill="#262D5E"/>${studs}${svg}<circle cx="155" cy="155" r="24" fill="#FAF1DD" stroke="#262D5E" stroke-width="4"/><circle cx="155" cy="155" r="9" fill="#F1C84A" stroke="#262D5E" stroke-width="3"/></svg></div></div>`);
+    let spun = false;
+    $(".wheel-box").onclick = () => {
+      if (spun) return; spun = true; $(".wheel-box").classList.remove("idle");
+      const w = rnd(n), jit = (Math.random() - .5) * seg * .7;      // vincitore deciso PRIMA dell'animazione
+      ev.data.winner = ps[w].id;
+      const fin = 360 * 6 + (((360 - (w + .5) * seg - jit) % 360) + 360) % 360, wh = $("#wheel");
+      wh.animate([{ transform: "rotate(0deg)" }, { transform: `rotate(${fin}deg)` }], { duration: 5200, easing: "cubic-bezier(.12,.62,.08,1)", fill: "forwards" });
+      wh.style.transform = `rotate(${fin}deg)`;
+      setTimeout(() => { applyOnce(ev, "r", () => ev.data.got = add(ps[w].id, 15)); showCard("ROULETTE", "", [row(ps[w].id, 15)]); }, 6000);   // pausa sul risultato
+    };
+  }
+
+  function coinStage(ev, first, fp) {
+    openLayer("", `<div class="ev-who" style="background:${fp.color}">${escapeHtml(fp.name)}</div><div class="cstap" id="cs">${coin3d(190, false, "static")}</div>`);
+    let flipped = false;
+    $("#cs").onclick = () => {
+      if (flipped) return; flipped = true; $("#cs").style.animation = "none";
+      const heads = rnd(2) === 0; ev.data.heads = heads;
+      const c = $(".c3"); c.style.transition = "transform 2s cubic-bezier(.2,.7,.2,1)";
+      c.style.transform = `rotateX(-16deg) rotateY(${1800 + (heads ? 0 : 180)}deg)`;
+      $("#cs").animate([{ transform: "translateY(0)" }, { transform: "translateY(-70px)", offset: .4 }, { transform: "translateY(0)" }], { duration: 2000, easing: "ease-in-out" });
+      setTimeout(() => {
+        if (heads) applyOnce(ev, "c", () => add(first, 10));
+        showCard(heads ? "FLIP 7!" : "FACCIA VUOTA", "", heads ? [row(first, 10)] : []);
+      }, 2300);
+    };
+  }
+
+  function pairsHtml(ev, res) {
+    const c = (id) => `<span class="ev-row" style="flex:1;margin:0;background:${P(id).color}"><span>${escapeHtml(P(id).name)}</span>${res ? `<b>${res[id]}</b>` : ""}</span>`;
+    return `<div class="ev-card"><div class="ev-title">DUELLO</div>` +
+      ev.data.pairs.map(([a, b]) => `<div style="display:flex;gap:6px;align-items:center;margin-top:8px">${c(a)}<span style="font-weight:800">VS</span>${c(b)}</div>`).join("") +
+      (ev.data.ex ? `<div style="margin-top:12px;font-weight:700">Escluso dal duello</div><div style="display:flex;margin-top:4px">${c(ev.data.ex)}</div>` : "") + `</div>`;
+  }
+
+  // Fenice: controllo dopo la conferma del primo giocatore (l'animazione è già stata mostrata nell'introduzione).
+  function phoenixCheck(bust, proceed) {
+    const ev = state.event;
+    if (!evIs("phoenix")) return proceed();
+    const first = state.turnOrder[0], ps = state.players, n = ps.length, L = quakeK(n), G = L * (n - 1);
+    const deltas = () => ps.map(p => ({ id: p.id, d: p.id === first ? G : -L }));
+    if (bust && !ev.applied.p) {
+      ev.applied.p = 1;
+      ev.data.pd = deltas().map(x => ({ id: x.id, d: add(x.id, x.d) }));   // variazioni reali (con eventuale limite a 0)
+      showCard("FENICE", "", ev.data.pd.map(x => row(x.id, x.d)), proceed);
+    } else if (!bust && ev.applied.p) {   // il primo ha corretto il punteggio: l'effetto non è più valido
+      ev.applied.p = 0;
+      (ev.data.pd || []).forEach(x => add(x.id, -x.d));
+      showCard("FENICE ANNULLATA", "Il primo giocatore non ha più fatto bust: punti restituiti", [], proceed);
+    } else proceed();
+  }
+
+  // Fase finale (dopo l'ultimo punteggio, prima del controllo vincitore).
+  function runPost(done) {
+    const ev = state.event, S = state.finishedRoundScores, first = state.turnOrder[0];
+    if (!ev || !eventsActive()) return done();
+    if (ev.type === "loser" && !ev.applied.l) {
+      ev.applied.l = 1;
+      const b = Object.keys(S).map(Number).filter(id => S[id].bust);
+      b.forEach(id => add(id, 15));
+      return showCard("JACKPOT DEL PERDENTE", b.length ? "" : "Nessuno ha sballato", b.map(id => row(id, 15)), done);
+    }
+    if (ev.type === "duel" && !ev.applied.d) {
+      ev.applied.d = 1;
+      const res = {};
+      ev.data.pairs.forEach(([a, b]) => {
+        const x = S[a].total, y = S[b].total, da = x > y ? 10 : x === y ? 5 : 0, db = y > x ? 10 : x === y ? 5 : 0;
+        add(a, da); add(b, db); res[a] = `${x} · ${fmt(da)}`; res[b] = `${y} · ${fmt(db)}`;
+      });
+      if (ev.data.ex) { add(ev.data.ex, 5); res[ev.data.ex] = "+5"; }
+      openLayer("", pairsHtml(ev, res) + `<button class="ev-btn" id="ev-ok">Continua</button>`);
+      $("#ev-ok").onclick = () => { closeLayer(); done(); };
+      return;
+    }
+    if (ev.type === "theft" && !ev.applied.t) {
+      // Finestra nera centrale (sfondo dell'app visibile). La scelta resta nascosta fino al tocco.
+      openLayer("dim", `<div class="ev-modal"><div class="ev-q">${escapeHtml(P(first).name)}, chi vuoi derubare?</div>` +
+        state.players.filter(p => p.id !== first).map(p => `<button class="ev-pick" data-id="${p.id}" style="border-color:${p.color}"><span class="pk-n">${escapeHtml(p.name)}</span><span class="pk-s">${p.total} punti</span></button>`).join("") + `</div>`);
+      layer.querySelectorAll(".ev-pick").forEach(btn => btn.onclick = () => {
+        if (ev.applied.t) return; ev.applied.t = 1;
+        add(+btn.dataset.id, -10); add(first, 10);
+        closeLayer(); done();            // chiude la finestra e mostra la classifica aggiornata
+      });
+      return;
+    }
+    done();
+  }
 
   /* ---------------- Round entry logic ---------------- */
   const roundTitle = $("#round-title");
@@ -2728,8 +3159,10 @@ input[type=number]{-moz-appearance:textfield;}
     state.roundPlayerIndex = 0;
     state.roundEntries = {};
     state.finishedRoundScores = {};
+    state.finishing = false;
     renderGameScreen();
     openSheet(gameSheet);
+    if (state.event && !state.event.pre && eventsActive()) { evBusy = true; setTimeout(runPre, 450); }
   }
 
   function renderGameScreen() {
@@ -2776,6 +3209,7 @@ input[type=number]{-moz-appearance:textfield;}
       modsRows.appendChild(rowEl);
     });
 
+    renderEventBanner();
     renderFlip7Banner(entry);
     recompute();
   }
@@ -2843,7 +3277,7 @@ input[type=number]{-moz-appearance:textfield;}
       <div class="f7-title">${F7_STAR_ICON} Flip 7! Choose the bonus</div>
       <div class="flip7-choice-row">
         <button class="f7-choice-btn" id="f7-self">+15 to me</button>
-        <button class="f7-choice-btn" id="f7-target">-15 to opponent</button>
+        <button class="f7-choice-btn" id="f7-target">-25 to opponent</button>
       </div>
     `;
     flip7Slot.appendChild(banner);
@@ -2906,9 +3340,10 @@ input[type=number]{-moz-appearance:textfield;}
     let numbersSum = cardsSum + luckyBonus;
 
     let modsSum = 0;
+    const chaosMul = evIs("chaos") ? 2 : 1;   // Caos: raddoppia solo +/- (non ×2 / ÷2)
     modsForMode().forEach(m => {
       if ((m.type === "pos" || m.type === "neg") && entry.mods.has(m.key)) {
-        modsSum += m.value;
+        modsSum += m.value * chaosMul;
       }
     });
 
@@ -2916,7 +3351,7 @@ input[type=number]{-moz-appearance:textfield;}
     let targetPenalty = null;
     if (entry.cards.size === 7) {
       if (entry.flip7Choice === "target" && entry.flip7Target) {
-        targetPenalty = { id: entry.flip7Target, amount: -15 };
+        targetPenalty = { id: entry.flip7Target, amount: -25 };
       } else {
         flip7Bonus = 15;
       }
@@ -2947,6 +3382,7 @@ input[type=number]{-moz-appearance:textfield;}
   }
 
   backPlayerBtn.addEventListener("click", () => {
+    if (evBusy || infoOpen) return;
     if (state.roundPlayerIndex === 0) {
       // Back out of the very first player: cancel this round entirely,
       // as if "Next Round" had not been pressed yet.
@@ -2962,25 +3398,36 @@ input[type=number]{-moz-appearance:textfield;}
   });
 
   nextPlayerBtn.addEventListener("click", () => {
+    if (evBusy || infoOpen) return;
     const entry = currentEntry();
     const { total, targetPenalty } = readEntryFinalScore(entry);
-    state.finishedRoundScores[currentPlayerId()] = { total, targetPenalty };
-
-    if (state.roundPlayerIndex < state.turnOrder.length - 1) {
-      state.roundPlayerIndex += 1;
-      renderGameScreen();
-    } else {
-      finishRound();
-    }
+    const bust = isBust(entry, total);
+    state.finishedRoundScores[currentPlayerId()] = { total, targetPenalty, bust };
+    const isFirst = state.roundPlayerIndex === 0;
+    const proceed = () => {
+      if (state.roundPlayerIndex < state.turnOrder.length - 1) {
+        state.roundPlayerIndex += 1;
+        renderGameScreen();
+      } else {
+        finishRound();
+      }
+    };
+    if (isFirst) phoenixCheck(bust, proceed); else proceed();
   });
 
   function finishRound() {
-    // apply totals
+    if (state.finishing) return;
+    state.finishing = true;
+    // Tempesta: il risultato individuale di ogni giocatore (modificatori inclusi) cambia segno UNA volta,
+    // e il valore invertito è quello che viene sommato al totale accumulato (i round precedenti non si toccano).
+    const storm = evIs("storm");
+    if (storm) state.event.applied.s = 1;
     Object.keys(state.finishedRoundScores).forEach(idStr => {
       const id = parseInt(idStr, 10);
-      const { total, targetPenalty } = state.finishedRoundScores[id];
+      const { total: raw, targetPenalty } = state.finishedRoundScores[id];
+      const total = storm && raw !== 0 ? -raw : raw;
       const player = state.players.find(p => p.id === id);
-      if (player) player.total += total;
+      if (player) { player.total += total; if (!state.brutal && player.total < 0) player.total = 0; }
       if (targetPenalty) {
         const target = state.players.find(p => p.id === targetPenalty.id);
         if (target) {
@@ -2990,18 +3437,23 @@ input[type=number]{-moz-appearance:textfield;}
       }
     });
 
-    const winner = state.players.some(p => p.total >= state.target);
-    if (winner) {
-      renderWinner();
-      closeSheet(gameSheet);
-      showScreen("winner");
-    } else {
-      // rotate turn order: first goes to the back
-      const first = state.turnOrder.shift();
-      state.turnOrder.push(first);
-      renderScoreboard();
-      closeSheet(gameSheet);
-    }
+    runPost(() => {
+      const hadEvent = !!state.event;
+      state.event = null; // evento consumato
+      const winner = state.players.some(p => p.total >= state.target);
+      if (winner) {
+        renderWinner();
+        closeSheet(gameSheet);
+        showScreen("winner");
+      } else {
+        // rotate turn order: first goes to the back
+        const first = state.turnOrder.shift();
+        state.turnOrder.push(first);
+        drawEvent(hadEvent);   // estrazione per il round successivo
+        renderScoreboard();
+        closeSheet(gameSheet);
+      }
+    });
   }
 
   /* ---------------- Scoreboard ---------------- */
@@ -3033,13 +3485,30 @@ input[type=number]{-moz-appearance:textfield;}
         <div class="badge">${rankOf.get(p.id)}</div>
         <div class="score-row-mid">
           <div class="p-name">${escapeHtml(p.name)}</div>
-          <div class="remain-pill">${remaining} &gt; ${state.target}</div>
+          <div class="remain-pill">${remaining}</div>
         </div>
         <div class="p-score">${p.total}</div>
       `;
       scoreboardList.appendChild(row);
     });
+    fitScoreboard(); requestAnimationFrame(fitScoreboard); setTimeout(fitScoreboard, 380);
   }
+  // Classifica provvisoria senza scorrimento: 3-6 giocatori = 1 colonna, 7-12 = 2, 13-18 = 3 (riempimento per colonne).
+  function fitScoreboard() {
+    const n = state.turnOrder.length, cols = n <= 6 ? 1 : n <= 12 ? 2 : 3, rows = Math.ceil(n / cols);
+    const wrap = $("#scoreboard-scroll"), avail = (wrap.clientHeight || window.innerHeight - 270) - 35;
+    const gap = cols === 1 ? 12 : 9, base = cols === 1 ? 74 : 78, rh = Math.max(34, Math.min(base, (avail - gap * (rows - 1)) / rows));
+    const k = [0, [25, 38, 15], [19, 28, 13], [15, 22, 12]][cols];
+    const st = scoreboardList.style;
+    scoreboardList.className = "scoreboard-list fit sc" + cols;
+    st.setProperty("--rh", rh + "px"); st.setProperty("--gap", gap + "px");
+    st.setProperty("--nf", Math.min(k[0], rh * (cols === 3 ? .24 : cols === 2 ? .3 : .35)) + "px");
+    st.setProperty("--sf", Math.min(k[1], rh * (cols === 3 ? .34 : cols === 2 ? .44 : .52)) + "px");
+    st.setProperty("--pf", Math.min(k[2], rh * .2) + "px");
+    st.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+    st.gridTemplateRows = `repeat(${rows}, var(--rh))`;
+  }
+  window.addEventListener("resize", () => { if (screens.scoreboard.classList.contains("active")) fitScoreboard(); });
 
   const actionCardsSheet = $("#action-cards-sheet");
   const modifierCardsSheet = $("#modifier-cards-sheet");
@@ -3174,7 +3643,11 @@ input[type=number]{-moz-appearance:textfield;}
   /* ---------------- Modifier Cards screen ---------------- */
   function infoIconText() {
     if (state.brutal) {
-      return "Possono essere dati a qualsiasi giocatore, anche se ha sballato o ha deciso di terminare il suo turno; non può essere dato a chi è congelato.";
+      let text = "Possono essere dati a qualsiasi giocatore, anche se ha sballato o ha deciso di terminare il suo turno; non può essere dato a chi è congelato.";
+      if (state.scoringMode === "combo") {
+        text += " Se viene girato un modificatore negativo e sul tavolo c'è il suo corrispondente positivo puoi scambiarlo.";
+      }
+      return text;
     }
     return "Possono essere dati a qualsiasi giocatore, anche se ha deciso di terminare il suo turno; non può essere dato a chi è congelato.";
   }
@@ -3290,6 +3763,22 @@ input[type=number]{-moz-appearance:textfield;}
   }
 
   $("#new-game-btn").addEventListener("click", () => goToSetup(true));
+
+  $("#try-again-btn").addEventListener("click", () => {
+    // Stessi giocatori, stesse modalità, punteggi azzerati.
+    // A fine partita turnOrder[0] è chi ha iniziato l'ultimo turno:
+    // si ruota di una posizione così inizia il giocatore successivo.
+    const first = state.turnOrder.shift();
+    state.turnOrder.push(first);
+    state.round = 0;
+    state.roundPlayerIndex = 0;
+    state.roundEntries = {};
+    state.finishedRoundScores = {};
+    state.event = null; state.evGap = 0; state.evW = {};
+    state.players.forEach(p => p.total = 0);
+    renderScoreboard();
+    showScreen("scoreboard");
+  });
 
   const rulesSheet = $("#rules-sheet");
   $("#rules-btn").addEventListener("click", () => openSheet(rulesSheet));
