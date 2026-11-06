@@ -2830,7 +2830,7 @@ input[type=number]{-moz-appearance:textfield;}
   // ===== PARAMETRI DI BILANCIAMENTO (facili da modificare) =====
   const EVENT_CFG = {
     chance: 0.40,       // probabilità generale che un round attivi un evento (indipendente dal resto)
-    maxGap: 3,          // max round consecutivi senza evento: al raggiungimento l'evento è obbligatorio
+    maxGap: 2,          // max round consecutivi senza evento (dopo 2 round senza evento, il 3° ne ha uno obbligatorio): al raggiungimento l'evento è obbligatorio
     startWeight: 1.0,   // peso iniziale di ogni evento (100%)
     dropTo: 0.80,       // peso dell'evento appena estratto (80%)
     recoverStep: 0.05   // recupero di peso a ogni round in cui l'evento non viene estratto (fino al 100%)
@@ -2843,10 +2843,10 @@ input[type=number]{-moz-appearance:textfield;}
     ["storm","TEMPESTA","A fine round il punteggio ottenuto da ciascun giocatore in questo round cambia segno (+12 diventa −12). Il totale in classifica non viene invertito."],
     ["jackpot","JACKPOT","Il primo giocatore del round riceve +15 punti in classifica generale."],
     ["loser","JACKPOT DEL PERDENTE","Alla fine del round ogni giocatore che ha fatto bust (0 punti) riceve +15 punti in classifica generale."],
-    ["flip","RIBALTONE","Il primo in classifica perde 10 punti, l'ultimo riceve +20. Si applica sempre, anche se l'ultimo ha fatto bust."],
+    ["flip","RIBALTONE","A fine round, sulla classifica aggiornata, il primo in classifica perde 10 punti e l'ultimo riceve +20. Si applica sempre, anche se l'ultimo ha fatto bust."],
     ["duel","DUELLO","Coppie casuali: a fine round chi ha il punteggio più alto riceve +10, in caso di pareggio +5 a entrambi. Chi resta senza avversario riceve +5."],
     ["theft","FURTO","A fine round il primo giocatore sceglie un avversario e gli ruba 10 punti in classifica."],
-    ["phoenix","FENICE","Se il primo giocatore del round fa bust, ruba punti a tutti gli altri (anche sotto zero): 3 giocatori −5 a testa, 4 −4, 5–6 −3, 7–10 −2, 11+ −1. Il primo incassa il totale."],
+    ["phoenix","FENICE","Se il primo giocatore del round usa uno o più modificatori per inserire il punteggio (qualunque sia il risultato), o fa bust, ruba punti a tutti gli altri (anche sotto zero): 3 giocatori −5 a testa, 4 −4, 5–6 −3, 7–10 −2, 11+ −1. Il primo incassa il totale."],
   ].map(([id, name, desc]) => ({ id, name, desc }));
   const BIG = { coin: "TESTA<br>E CROCE", loser: "JACKPOT<br>DEL PERDENTE" };
 
@@ -2964,13 +2964,6 @@ input[type=number]{-moz-appearance:textfield;}
       coin: () => coinStage(ev, first, fp),
       quake: () => { const ds = quakeDeltas(ps); applyOnce(ev, "q", () => ds.forEach(x => { x.d = add(x.id, x.d); })); showCard("TERREMOTO", "", ds.map(x => row(x.id, x.d))); },
       jackpot: () => { applyOnce(ev, "j", () => add(first, 15)); showCard("JACKPOT", "", [row(first, 15)]); },
-      flip: () => {
-        const mx = Math.max(...ps.map(p => p.total)), mn = Math.min(...ps.map(p => p.total)), d = {};
-        ps.forEach(p => { d[p.id] = (p.total === mx ? -10 : 0) + (p.total === mn ? 20 : 0); });
-        const pl = { ...d };
-        applyOnce(ev, "f", () => ps.forEach(p => { d[p.id] = add(p.id, d[p.id]); }));
-        showCard("RIBALTONE", "", ps.filter(p => pl[p.id]).map(p => row(p.id, d[p.id])));
-      },
       duel: () => {
         const o = shuffle(ps.map(p => p.id)), ex = o.length % 2 ? o.pop() : null, pairs = [];
         for (let i = 0; i < o.length; i += 2) pairs.push([o[i], o[i + 1]]);
@@ -3041,7 +3034,7 @@ input[type=number]{-moz-appearance:textfield;}
     } else if (!bust && ev.applied.p) {   // il primo ha corretto il punteggio: l'effetto non è più valido
       ev.applied.p = 0;
       (ev.data.pd || []).forEach(x => add(x.id, -x.d));
-      showCard("FENICE ANNULLATA", "Il primo giocatore non ha più fatto bust: punti restituiti", [], proceed);
+      showCard("FENICE ANNULLATA", "Il primo giocatore non soddisfa più la condizione: punti restituiti", [], proceed);
     } else proceed();
   }
 
@@ -3049,6 +3042,14 @@ input[type=number]{-moz-appearance:textfield;}
   function runPost(done) {
     const ev = state.event, S = state.finishedRoundScores, first = state.turnOrder[0];
     if (!ev || !eventsActive()) return done();
+    if (ev.type === "flip" && !ev.applied.f) {   // Ribaltone: applicato sulla classifica aggiornata a fine round
+      ev.applied.f = 1;
+      const ps = state.players, mx = Math.max(...ps.map(p => p.total)), mn = Math.min(...ps.map(p => p.total)), d = {};
+      ps.forEach(p => { d[p.id] = (p.total === mx ? -10 : 0) + (p.total === mn ? 20 : 0); });
+      const pl = { ...d };
+      ps.forEach(p => { d[p.id] = add(p.id, d[p.id]); });
+      return showCard("RIBALTONE", "", ps.filter(p => pl[p.id]).map(p => row(p.id, d[p.id])), done);
+    }
     if (ev.type === "loser" && !ev.applied.l) {
       ev.applied.l = 1;
       const b = Object.keys(S).map(Number).filter(id => S[id].bust);
@@ -3412,7 +3413,8 @@ input[type=number]{-moz-appearance:textfield;}
         finishRound();
       }
     };
-    if (isFirst) phoenixCheck(bust, proceed); else proceed();
+    // Fenice: si attiva se il primo giocatore ha usato modificatori (indipendentemente dal risultato) o ha fatto bust
+    if (isFirst) phoenixCheck(bust || entry.mods.size > 0, proceed); else proceed();
   });
 
   function finishRound() {
