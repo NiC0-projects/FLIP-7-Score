@@ -1432,6 +1432,20 @@ input[type=number]{-moz-appearance:textfield;}
 .xh{position:absolute;left:0;top:0;filter:drop-shadow(0 2px 0 rgba(255,255,255,.7))}
 .bz-hit{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:#E8403A;border:3px solid var(--navy);animation:hit .6s ease-out}
 @keyframes hit{from{transform:scale(3);opacity:0}to{transform:scale(1);opacity:1}}
+
+.ev-row b{min-width:56px;text-align:right}
+.rbfx{padding:0 7px;border-radius:8px;background:rgba(0,0,0,.4);margin-right:2px}
+.rtag{font:700 12px var(--font);padding:1px 7px;border-radius:8px;background:rgba(0,0,0,.4);white-space:nowrap}
+.ev-destiny{--g:#E64E77}
+.bz-stop{background:#E8403A}
+.c13.pk{cursor:pointer}.c13.dim{opacity:.4}
+.dst-big{position:absolute;left:0;right:0;top:50%;margin-top:-70px;text-align:center;font:800 110px/1 var(--font);color:#fff;text-shadow:0 6px 0 var(--navy-2),0 0 30px currentColor;pointer-events:none;animation:dstpop 1.8s ease-out forwards;z-index:5}
+@keyframes dstpop{0%{transform:scale(.2);opacity:0}25%{transform:scale(1.15);opacity:1}70%{transform:scale(1);opacity:1}100%{transform:scale(1);opacity:0}}
+.ev-card{position:relative}
+.sac-i{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;border:2.5px solid var(--navy);background:var(--cream);color:var(--navy);font:800 15px var(--font);padding:0;cursor:pointer}
+.sac-ov{position:absolute;inset:0;z-index:6;background:rgba(29,35,72,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.sac-t{width:100%;border-collapse:collapse;font:700 15px var(--font)}.sac-t td{padding:4px 8px;border-bottom:1px solid rgba(38,45,94,.25)}.sac-t td:last-child{text-align:right}
+.ev-row.gr{background:#9A9A9A!important;color:#E4E4E4;filter:grayscale(1)}
 </style>
 </head>
 <body>
@@ -2876,15 +2890,15 @@ input[type=number]{-moz-appearance:textfield;}
   // ===== PARAMETRI DI BILANCIAMENTO (facili da modificare) =====
   const EVENT_CFG = {
     chance: 0.40,       // probabilità generale che un round attivi un evento (indipendente dal resto)
-    maxGap: 3,          // dopo 3 round consecutivi senza evento, il 4° ne ha uno obbligatorio
+    maxGap: 2,          // dopo 2 round consecutivi senza evento, il 3° ne ha uno obbligatorio
     startWeight: 1.0,   // peso iniziale di ogni evento (100%)
-    dropTo: 0.20,       // peso dell'evento appena estratto (20%)
-    recoverStep: 0.15,  // recupero degli altri eventi (già usciti) a ogni evento effettivamente estratto
-    maxRecover: 0.80    // un evento già uscito non torna mai oltre l'80% nella stessa partita
+    dropTo: 0.10,       // peso dell'evento appena estratto (10%)
+    recoverStep: 0.10,  // recupero individuale a ogni round in cui l'evento non viene estratto
+    maxRecover: 0.70    // un evento già uscito recupera al massimo il 70%
   };
   const EVENTS = [
     ["chaos","CAOS","Tutti i modificatori positivi e negativi del round valgono il doppio (+5 diventa +10, −5 diventa −10). ×2 e ÷2 restano invariati."],
-    ["roulette","ROULETTE","Prima del round gira la ruota: il giocatore estratto riceve subito +15 punti in classifica generale."],
+    ["roulette","RUOTA DELLA FORTUNA","Prima del round gira la ruota: il giocatore estratto riceve subito +15 punti in classifica generale."],
     ["coin","TESTA E CROCE","Il primo giocatore del round lancia la moneta: se esce FLIP 7 guadagna +10 punti in classifica, se esce la faccia vuota non succede nulla."],
     ["quake","TERREMOTO","Penalità in classifica in base alla posizione: più sei in alto, più perdi. I pari merito subiscono la stessa penalità."],
     ["storm","TEMPESTA","A fine round il punteggio ottenuto da ciascun giocatore in questo round cambia segno (+12 diventa −12). Il totale in classifica non viene invertito."],
@@ -2893,15 +2907,16 @@ input[type=number]{-moz-appearance:textfield;}
     ["flip","RIBALTONE","A fine round, sulla classifica aggiornata, il primo in classifica perde 10 punti e l'ultimo riceve +20. Si applica sempre, anche se l'ultimo ha fatto bust."],
     ["duel","DUELLO","Coppie casuali: a fine round chi ha il punteggio più alto riceve +10, in caso di pareggio +5 a entrambi. Chi resta senza avversario riceve +5."],
     ["theft","FURTO","A fine round il primo giocatore sceglie un avversario e gli ruba 10 punti in classifica."],
-    ["bullseye","BERSAGLIO","A fine round un mirino colpisce il bersaglio con il primo della classifica aggiornata: perde 5, 10, 15 o 20 punti a caso."],
+    ["bullseye","BERSAGLIO","Il primo della classifica è il bersaglio: ferma il mirino con il giusto tempismo. Più vicino al centro colpisci, meno punti perde (−5, −10, −15, −20)."],
     ["slot","SLOT MACHINE","Prima del proprio punteggio ogni giocatore ferma tre rulli: 3 simboli uguali +20, 2 uguali +10, tre monete Flip 7 tolgono 10 a un avversario (nessun bonus per te), la X rossa −10."],
-    ["bounty","TAGLIA","Il primo in classifica a inizio round è la taglia: chi a fine round, col punteggio ottenuto, supera di almeno 10 punti il suo totale iniziale guadagna +10."],
+    ["bounty","TAGLIA","Il primo in classifica a inizio round è la taglia: chi a fine round ottiene nel round almeno 10 punti in più di lui guadagna +10."],
+    ["destiny","DESTINO","Prima del proprio punteggio ogni giocatore pesca una carta dal mazzo e, a seconda del valore che esce, riceve un premio o una penalità. Il valore si somma al punteggio del round."],
     ["cards","LE CARTE","Ognuno sceglie in segreto una carta (+3, +5, +8, +10). A fine round vince chi ha la carta più alta scelta da una sola persona e ne incassa il valore."],
-    ["button","IL BOTTONE","Prima del proprio turno ogni giocatore può premere NON PREMERE: premio, penalità, scambio con primo/ultimo, 13 carte o saccheggio. Oppure continuare senza rischi."],
+    ["button","IL BOTTONE","Prima del proprio turno ogni giocatore può premere NON PREMERE: premio, penalità, scambio con primo/ultimo, Destino, saccheggio o sacrificio. Oppure continuare senza rischi."],
     ["rr","ROULETTE RUSSA","Ognuno sceglie ROSSO o NERO in segreto. La roulette gira: chi ha indovinato il colore guadagna +10."],
     ["phoenix","FENICE","Se il primo giocatore del round usa uno o più modificatori per inserire il punteggio (qualunque sia il risultato), o fa bust, ruba punti a tutti gli altri (anche sotto zero): 3 giocatori −5 a testa, 4 −4, 5–6 −3, 7–10 −2, 11+ −1. Il primo incassa il totale."],
   ].map(([id, name, desc]) => ({ id, name, desc }));
-  const BIG = { coin: "TESTA<br>E CROCE", loser: "JACKPOT<br>DEL PERDENTE", slot: "SLOT<br>MACHINE", button: "IL<br>BOTTONE", rr: "ROULETTE<br>RUSSA" };
+  const BIG = { coin: "TESTA<br>E CROCE", loser: "JACKPOT<br>DEL PERDENTE", slot: "SLOT<br>MACHINE", button: "IL<br>BOTTONE", rr: "ROULETTE<br>RUSSA", roulette: "RUOTA DELLA<br>FORTUNA" };
 
   const layer = $("#event-layer");
   let evBusy = false, infoOpen = false;
@@ -2926,7 +2941,7 @@ input[type=number]{-moz-appearance:textfield;}
   function openLayer(mode, html) { layer.className = "show " + (mode || ""); layer.innerHTML = html || ""; evBusy = true; }
   function closeLayer() { layer.className = ""; layer.innerHTML = ""; evBusy = false; }
   function showCard(title, sub, rows, done, mode) {
-    openLayer(mode, `<div class="ev-card"><div class="ev-title">${title}</div>${sub ? `<div class="ev-sub">${sub}</div>` : ""}${rows.map(r => `<div class="ev-row" style="background:${r.color}"><span>${escapeHtml(r.name)}</span><b>${r.right}</b></div>`).join("")}</div><button class="ev-btn" id="ev-ok">Continua</button>`);
+    openLayer(mode, `<div class="ev-card"><div class="ev-title">${title}</div>${sub ? `<div class="ev-sub">${sub}</div>` : ""}${rows.map(r => `<div class="ev-row" style="background:${r.color}">${r.pre || ""}<span>${escapeHtml(r.name)}</span>${r.tag || ""}<b>${r.right}</b></div>`).join("")}</div><button class="ev-btn" id="ev-ok">Continua</button>`);
     $("#ev-ok").onclick = () => { closeLayer(); if (done) done(); };
   }
   const applyOnce = (ev, k, fn) => { if (ev.applied[k]) return false; ev.applied[k] = 1; fn(); return true; };
@@ -2941,16 +2956,15 @@ input[type=number]{-moz-appearance:textfield;}
     if (!eventsActive()) return;
     const W = state.evW, w = (id) => W[id] === undefined ? EVENT_CFG.startWeight : W[id];
     state.evGap = hadEvent ? 0 : state.evGap + 1;
-    // 1) attivazione: 40% (o garanzia). I pesi intervengono solo dopo.
-    if (!(state.evGap >= EVENT_CFG.maxGap || Math.random() < EVENT_CFG.chance)) return;
-    // 2) scelta pesata tra tutti gli eventi (nessuno escluso)
-    let r = Math.random() * EVENTS.reduce((t, e) => t + w(e.id), 0);
-    const pick = EVENTS.find(e => (r -= w(e.id)) < 0) || EVENTS[EVENTS.length - 1];
-    // 3) aggiornamento pesi: gli altri eventi già usciti recuperano 15 punti (max 80%), quello estratto scende al 20%
-    EVENTS.forEach(e => { if (e.id !== pick.id && W[e.id] !== undefined) W[e.id] = Math.min(EVENT_CFG.maxRecover, W[e.id] + EVENT_CFG.recoverStep); });
-    W[pick.id] = EVENT_CFG.dropTo;
-    state.evGap = 0;
-    state.event = { type: pick.id, pre: false, intro: false, applied: {}, data: {} };
+    let pick = null;
+    // 1) attivazione: 40% (obbligatoria dopo 2 round senza eventi). I pesi intervengono solo dopo.
+    if (state.evGap >= EVENT_CFG.maxGap || Math.random() < EVENT_CFG.chance) {
+      let r = Math.random() * EVENTS.reduce((t, e) => t + w(e.id), 0);
+      pick = EVENTS.find(e => (r -= w(e.id)) < 0) || EVENTS[EVENTS.length - 1];
+    }
+    // 2) recupero individuale (+10%, max 70%) per ogni evento già uscito e non estratto in questo round
+    EVENTS.forEach(e => { if ((!pick || e.id !== pick.id) && W[e.id] !== undefined) W[e.id] = Math.round(Math.min(EVENT_CFG.maxRecover, W[e.id] + EVENT_CFG.recoverStep) * 100) / 100; });
+    if (pick) { W[pick.id] = EVENT_CFG.dropTo; state.evGap = 0; state.event = { type: pick.id, pre: false, intro: false, applied: {}, data: {} }; }
   }
 
   /* ----- Nome evento in alto + finestra informativa ----- */
@@ -2979,6 +2993,7 @@ input[type=number]{-moz-appearance:textfield;}
     bullseye: () => `<div class="bz"><i></i><i></i><i></i><i></i></div>`,
     slot: () => `<div class="sm"><u></u><u></u><u></u></div>`,
     bounty: () => `<div class="bt"></div>`,
+    destiny: () => `<div class="cf4">${["#2EB7B1","#F1C84A","#E64E77","#FAF1DD","#2EB7B1"].map((c, i) => `<i style="--c:${c};--r:${(i - 2) * 20}deg"></i>`).join("")}</div>`,
     cards: () => `<div class="cf4">${["#2EB7B1","#F1C84A","#E64E77","#4C57C9"].map((c, i) => `<i style="--c:${c};--r:${(i - 1.5) * 24}deg"></i>`).join("")}</div>`,
     button: () => `<div class="bb"></div>`,
     rr: () => `<div class="rrw"></div>`,
@@ -3021,7 +3036,9 @@ input[type=number]{-moz-appearance:textfield;}
       const mx = Math.max(...ps.map(p => p.total)), tops = ps.filter(p => p.total === mx);
       ev.data.max = mx; ev.data.leader = tops[rnd(tops.length)].id; ev.data.base = {}; ps.forEach(p => { ev.data.base[p.id] = p.total; });
     }
+    if (ev.type === "button") { ev.data.snap = {}; ps.forEach(p => { ev.data.snap[p.id] = p.total; }); }   // classifica prima del round (Il Sacrificio)
     const next = {
+      destiny: () => playerStage(),
       slot: () => playerStage(),
       button: () => playerStage(),
       cards: () => cardsPick(ev, 0),
@@ -3060,7 +3077,7 @@ input[type=number]{-moz-appearance:textfield;}
       const fin = 360 * 6 + (((360 - (w + .5) * seg - jit) % 360) + 360) % 360, wh = $("#wheel");
       wh.animate([{ transform: "rotate(0deg)" }, { transform: `rotate(${fin}deg)` }], { duration: 5200, easing: "cubic-bezier(.12,.62,.08,1)", fill: "forwards" });
       wh.style.transform = `rotate(${fin}deg)`;
-      setTimeout(() => { applyOnce(ev, "r", () => ev.data.got = add(ps[w].id, 15)); showCard("ROULETTE", "", [row(ps[w].id, 15)]); }, 6000);   // pausa sul risultato
+      setTimeout(() => { applyOnce(ev, "r", () => ev.data.got = add(ps[w].id, 15)); showCard("RUOTA DELLA FORTUNA", "", [row(ps[w].id, 15)]); }, 6000);   // pausa sul risultato
     };
   }
 
@@ -3075,7 +3092,7 @@ input[type=number]{-moz-appearance:textfield;}
       $("#cs").animate([{ transform: "translateY(0)" }, { transform: "translateY(-70px)", offset: .4 }, { transform: "translateY(0)" }], { duration: 2000, easing: "ease-in-out" });
       setTimeout(() => {
         if (heads) applyOnce(ev, "c", () => add(first, 10));
-        showCard(heads ? "FLIP 7!" : "FACCIA VUOTA", "", heads ? [row(first, 10)] : []);
+        showCard(heads ? "Hai vinto +10" : "Sarà per la prossima volta", "", heads ? [row(first, 10)] : []);
       }, 2300);
     };
   }
@@ -3112,21 +3129,28 @@ input[type=number]{-moz-appearance:textfield;}
       ev.applied.ss = 1;
       return showCard("TEMPESTA", "Punteggi del round", state.turnOrder.map(id => row(id, 0, fmt(S[id].total === 0 ? 0 : -S[id].total))), done);   // valore invertito, come sommato al totale
     }
-    if (ev.type === "flip" && !ev.applied.f) {   // Ribaltone: classifica con i punti del round, poi gli effetti; applicati solo dopo CONTINUA
+    if (ev.type === "flip" && !ev.applied.f) {   // Ribaltone: classifica con i punti del round e effetti subito visibili; applicati solo dopo CONTINUA
       ev.applied.f = 1;
       const ps = [...state.players].sort((x, y) => y.total - x.total), mx = ps[0].total, mn = ps[ps.length - 1].total;
       const info = ps.map(p => ({ p, rank: 1 + ps.filter(o => o.total > p.total).length, tot: p.total, d: (p.total === mx ? -10 : 0) + (p.total === mn ? 20 : 0) }));
-      showCard("RIBALTONE", "Classifica con i punti del round", info.map(x => ({ color: x.p.color, name: `${x.rank}° ${x.p.name}`, right: `${x.tot}${x.d ? ` <span class="rbfx" style="opacity:0;transition:opacity .6s;margin-left:6px;padding:0 7px;border-radius:8px;background:rgba(0,0,0,.4)">${fmt(x.d)}</span>` : ""}` })),
+      return showCard("RIBALTONE", "Classifica con i punti del round", info.map(x => ({ color: x.p.color, name: `${x.rank}° ${x.p.name}`, pre: x.d ? `<span class="rbfx">${fmt(x.d)}</span>` : "", right: `${x.tot}` })),
         () => { info.forEach(x => add(x.p.id, x.d)); done(); });
-      setTimeout(() => layer.querySelectorAll(".rbfx").forEach(e => { e.style.opacity = 1; }), 1300);   // le modifiche compaiono dopo la classifica
-      return;
     }
-    if (ev.type === "bounty" && !ev.applied.b) {   // Taglia: riepilogo del round con +10; classifica aggiornata dopo CONTINUA
+    if (ev.type === "bounty" && !ev.applied.b) {   // Taglia: confronto tra i punteggi del solo round con il primo a inizio round
       ev.applied.b = 1;
-      const B = ev.data.base || {}, mx = ev.data.max;
-      const win = state.players.filter(p => B[p.id] !== undefined && B[p.id] < mx && S[p.id] && B[p.id] + S[p.id].total - mx >= 10).map(p => p.id);
-      return showCard("TAGLIA", `Bersaglio: ${escapeHtml(P(ev.data.leader).name)}` + (win.length ? "" : "<br>Nessuno ha superato la soglia"),
+      const L = ev.data.leader, ref = S[L] ? S[L].total : 0;
+      const win = state.players.filter(p => p.id !== L && S[p.id] && S[p.id].total >= ref + 10).map(p => p.id);
+      return showCard("TAGLIA", `Riferimento: ${escapeHtml(P(L).name)} (${fmt(ref)} nel round)` + (win.length ? "" : "<br>Nessuno ha superato la soglia"),
         state.turnOrder.map(id => row(id, 0, `${fmt(S[id].total)}${win.includes(id) ? " · +10" : ""}`)), () => { win.forEach(id => add(id, 10)); done(); });
+    }
+    if (ev.type === "destiny" && !ev.applied.dd) {   // Destino: riepilogo round + carta; applicato una volta dopo CONTINUA
+      ev.applied.dd = 1; const pp = stageOf(ev);
+      return showCard("DESTINO", "Punteggio del round · carta", state.turnOrder.map(id => row(id, 0, `${fmt(S[id].total)} · ${fmt(pp[id] ? pp[id].v : 0)}`)),
+        () => { state.turnOrder.forEach(id => add(id, pp[id] ? pp[id].v : 0)); done(); });
+    }
+    if (ev.type === "button" && !ev.applied.sac) {   // Il Sacrificio: penalità applicate insieme ai punteggi del round
+      ev.applied.sac = 1; Object.keys(ev.data.sac || {}).forEach(id => add(+id, ev.data.sac[id]));
+      return done();
     }
     if (ev.type === "bullseye" && !ev.applied.z) return bullseyeStage(ev, done);
     if (ev.type === "cards" && !ev.applied.cd) return cardsReveal(ev, done);
@@ -3150,7 +3174,7 @@ input[type=number]{-moz-appearance:textfield;}
     }
     if (ev.type === "theft" && !ev.applied.t) {
       // Finestra nera centrale (sfondo dell'app visibile). La scelta resta nascosta fino al tocco.
-      openLayer("dim", `<div class="ev-modal"><div class="ev-q">${escapeHtml(P(first).name)}, a chi vuoi rubare 10 punti?</div>` +
+      openLayer("dim", `<div class="ev-modal"><div class="ev-q">${escapeHtml(P(first).name)}, a chi vuoi rubare 10p?</div>` +
         state.players.filter(p => p.id !== first).map(p => `<button class="ev-pick" data-id="${p.id}" style="border-color:${p.color}"><span class="pk-n">${escapeHtml(p.name)}</span><span class="pk-s">${p.total} punti</span></button>`).join("") + `</div>`);
       layer.querySelectorAll(".ev-pick").forEach(btn => btn.onclick = () => {
         if (ev.applied.t) return; ev.applied.t = 1;
@@ -3170,9 +3194,10 @@ input[type=number]{-moz-appearance:textfield;}
 
   function playerStage() {
     const ev = state.event;
-    if (!ev || !ev.intro || !eventsActive() || (ev.type !== "slot" && ev.type !== "button")) return;
+    if (!ev || !ev.intro || !eventsActive() || (ev.type !== "slot" && ev.type !== "button" && ev.type !== "destiny")) return;
     const pid = currentPlayerId();
     if (stageOf(ev)[pid]) return;          // già svolta: tornare indietro non la ripete
+    if (ev.type === "destiny") return destinyEventStage(ev, pid);
     (ev.type === "slot" ? slotStage : buttonStage)(ev, pid);
   }
 
@@ -3194,7 +3219,7 @@ input[type=number]{-moz-appearance:textfield;}
   };
   function slotStage(ev, pid) {
     const reels = SLR.map((rs, i) => { const m = rs.length, c = [rs[m - 1], ...rs, ...rs, rs[0], rs[1]]; return `<div class="sl-reel"><div class="sl-strip">${c.map(x => `<div class="sl-cell">${SLS[x]}</div>`).join("")}</div></div>`; }).join("");
-    openLayer("", `${who(pid)}<div class="sl-legend">3 uguali <b>+20</b> · 2 uguali <b>+10</b> · nessuna <b>0</b><br>3 monete FLIP 7: -10 ad un avversario · ✕ rossa <b>−10</b></div><div class="sl-machine">${reels}</div><div class="sl-info" id="sl-info">Tocca un rullo per fermarlo</div><div id="sl-act" style="width:100%;max-width:340px"></div>`);
+    openLayer("", `${who(pid)}<div class="sl-legend"><div>3 uguali: +20 • 2 uguali: +10</div><div>3 Flip 7: -10 ad un giocatore</div><div>X: -10</div></div><div class="sl-machine">${reels}</div><div class="sl-info" id="sl-info">Tocca un rullo per fermarlo</div><div id="sl-act" style="width:100%;max-width:340px"></div>`);
     const syms = [], anims = [];
     layer.querySelectorAll(".sl-reel").forEach((el, i) => {
       const rs = SLR[i], m = rs.length, st = el.firstChild;
@@ -3237,7 +3262,7 @@ input[type=number]{-moz-appearance:textfield;}
   function buttonEffect(ev, pid) {
     const ps = state.players, me = P(pid), rec = stageOf(ev)[pid];
     const mx = Math.max(...ps.map(p => p.total)), mn = Math.min(...ps.map(p => p.total));
-    const opts = ["A", "B", "D", "E"];
+    const opts = ["A", "B", "D", "E", "S"];
     if (mx !== mn && (me.total === mx || me.total === mn)) opts.push("C");   // scambio possibile solo se primo o ultimo
     const e = rec.effect = opts[rnd(opts.length)];
     if (e === "A") { const d = add(pid, 15); return showCard("PREMIO", "", [row(pid, d)]); }
@@ -3249,21 +3274,55 @@ input[type=number]{-moz-appearance:textfield;}
       return showCard("SCAMBIO", wasFirst ? "Il primo diventa l’ultimo" : "L’ultimo diventa primo", [row(pid, 0, `${a} → ${b}`), row(o.id, 0, `${b} → ${a}`)]);
     }
     if (e === "E") {
-      const rows = ps.filter(p => p.id !== pid).map(p => row(p.id, add(p.id, -(p.total > 0 ? Math.ceil(p.total * 0.1) : 0))));
+      const rows = ps.filter(p => p.id !== pid).map(p => ({ ...row(p.id, add(p.id, -(p.total > 0 ? Math.ceil(p.total * 0.1) : 0))), tag: `<span class="rtag">Saccheggio (-10%)</span>` }));
       return showCard("SACCHEGGIO", "", rows);
     }
-    const col = (v) => v <= 4 ? "#2EB7B1" : v <= 10 ? "#F1C84A" : "#E64E77", rowsL = [5, 5, 3];
-    let k = 0; const grid = rowsL.map(n => `<div class="c13r">${Array.from({ length: n }, () => `<button class="c13" data-i="${k++}"></button>`).join("")}</div>`).join("");
-    openLayer("", `${who(pid)}<div class="sl-legend">Carte 1–4: <b>+20</b> · 5–10: <b>+5</b> · 11–13: <b>−10</b></div><div class="c13g">${grid}</div><div class="sl-info" id="c13-info">Scegli una carta</div><div id="c13-act" style="width:100%;max-width:340px"></div>`);
+    if (e === "S") {   // Il Sacrificio: penalità registrata ora, applicata a fine round
+      const pen = sacOf(ev.data.snap, pid); (ev.data.sac = ev.data.sac || {})[pid] = pen;
+      return sacrificeScreen(ev, pid, pen);
+    }
+    destinyScreen(pid, (n) => { const d = add(pid, destVal(n)); rec.c13 = { v: n, d }; return d; });   // DESTINO: applicato subito
+  }
+
+  /* --- Destino (carte scoperte) --- */
+  const destVal = (n) => n <= 4 ? 20 : n <= 10 ? 5 : n <= 13 ? -10 : 0;   // 14 = carta speciale con la stella
+  const DSTAR = `<svg viewBox="0 0 48 48" width="30" height="30"><path d="M24 4L30 18L45 19L33 29L37 44L24 36L11 44L15 29L3 19L18 18Z" fill="#F7A93B" stroke="#262D5E" stroke-width="3" stroke-linejoin="round"/></svg>`;
+  function destinyScreen(pid, onPick) {   // onPick(n) applica/registra e restituisce il valore da mostrare
+    const col = (n) => n <= 4 ? "#2EB7B1" : n <= 10 ? "#F1C84A" : n <= 13 ? "#E64E77" : "#FAF1DD";
+    let k = 0; const grid = [5, 5, 4].map(c => `<div class="c13r">${Array.from({ length: c }, () => { const i = ++k; return `<button class="c13 up pk" data-n="${i}" style="background:${col(i)}">${i <= 13 ? i : DSTAR}</button>`; }).join("")}</div>`).join("");
+    openLayer("", `<div class="ev-title" style="font-size:30px">DESTINO</div>${who(pid)}<div class="sl-legend">Carte 1–4: <b>+20</b> · 5–10: <b>+5</b> · 11–13: <b>−10</b> · ★: <b>0</b></div><div class="c13g">${grid}</div><div class="sl-info" id="c13-info"></div><div id="c13-act" style="width:100%;max-width:340px"></div>`);
     let picked = false;
     layer.querySelectorAll(".c13").forEach(b => b.onclick = () => {
       if (picked) return; picked = true;
-      const v = 1 + rnd(13), d = add(pid, v <= 4 ? 20 : v <= 10 ? 5 : -10); rec.c13 = { v, d };   // carte coperte indistinguibili: il valore estratto è casuale
-      layer.querySelectorAll(".c13").forEach((c, j) => { c.textContent = j + 1; c.style.background = col(j + 1); c.classList.add("up"); if (j + 1 === v) c.classList.add("sel"); });
-      $("#c13-info").innerHTML = `<b style="font-size:26px">${fmt(d)}</b>`;
+      const n = +b.dataset.n, d = onPick(n);
+      layer.querySelectorAll(".c13").forEach(c => { c.classList.remove("pk"); c.classList.toggle("sel", c === b); c.classList.toggle("dim", c !== b); });
+      layer.insertAdjacentHTML("beforeend", `<div class="dst-big">${fmt(d)}</div>`);
       $("#c13-act").innerHTML = `<button class="ev-btn" id="ev-ok">Continua</button>`;
       $("#ev-ok").onclick = () => closeLayer();
     });
+  }
+  function destinyEventStage(ev, pid) {   // evento DESTINO: la carta è registrata ora e sommata a fine round
+    destinyScreen(pid, (n) => { stageOf(ev)[pid] = { n, v: destVal(n) }; return destVal(n); });
+  }
+
+  /* --- Il Sacrificio --- */
+  const sacPen = (N, below, R) => (N <= 7 ? -4 * below : N <= 11 ? -3 * below : -Math.round(30 * (N - R) / (N - 1))) || 0;
+  const sacOf = (snap, id) => { const v = Object.values(snap), N = v.length, me = snap[id]; return sacPen(N, v.filter(x => x < me).length, 1 + v.filter(x => x > me).length); };
+  function sacrificeScreen(ev, pid, pen) {
+    const snap = ev.data.snap, me = snap[pid], list = state.players.slice().sort((a, b) => snap[b.id] - snap[a.id]), N = list.length;
+    const rank = (id) => 1 + list.filter(o => snap[o.id] > snap[id]).length;
+    const rows = list.map(p => {
+      const isMe = p.id === pid, below = snap[p.id] < me;
+      return `<div class="ev-row${below ? " gr" : ""}" style="${below ? "" : `background:${p.color};`}${isMe ? "box-shadow:0 0 0 3px #fff;" : ""}"><span>${rank(p.id)}° ${escapeHtml(p.name)}</span>${isMe ? `<span class="rbfx">${fmt(pen)}</span>` : ""}<b>${snap[p.id]}</b></div>`;
+    }).join("");
+    openLayer("", `<div class="ev-card"><button class="sac-i" id="sac-i" type="button">i</button><div class="ev-title">IL SACRIFICIO</div><div class="ev-sub">(Verrà utilizzata la classifica prima di questo round)</div>${rows}</div><button class="ev-btn" id="ev-ok">Continua</button>`);
+    $("#ev-ok").onclick = () => closeLayer();
+    $("#sac-i").onclick = () => {
+      if ($(".sac-ov")) return;
+      let t = ""; for (let r = 1; r <= N; r++) t += `<tr><td>${r}°</td><td>${fmt(sacPen(N, N - r, r))}</td></tr>`;   // stessa formula della penalità reale
+      layer.insertAdjacentHTML("beforeend", `<div class="sac-ov"><div class="ev-card"><div class="ev-title" style="font-size:22px">Penalità per posizione (${N} giocatori)</div><table class="sac-t">${t}</table></div><button class="ev-btn" id="sac-x">Chiudi</button></div>`);
+      $("#sac-x").onclick = () => $(".sac-ov").remove();
+    };
   }
 
   /* --- Le Carte --- */
@@ -3352,19 +3411,32 @@ input[type=number]{-moz-appearance:textfield;}
     ev.applied.z = 1;
     const ps = state.players, mx = Math.max(...ps.map(p => p.total)), tops = ps.filter(p => p.total === mx), L = tops[rnd(tops.length)];
     ev.data.leader = L.id;
-    const ri = rnd(4), VAL = [5, 10, 15, 20], band = [[0, 30], [40, 66], [74, 100], [108, 134]][ri];
-    const ang = Math.random() * 2 * Math.PI, rad = R(band[0], band[1]), tx = 150 + rad * Math.cos(ang), ty = 150 + rad * Math.sin(ang);
     const lab = (y, t) => `<text x="150" y="${y}" text-anchor="middle" dominant-baseline="central" font-family="Baloo 2" font-weight="800" font-size="20" fill="#262D5E">${t}</text>`;
-    openLayer("", `${who(L.id)}<div class="bz-box"><svg class="t" viewBox="0 0 300 300"><circle cx="150" cy="150" r="140" fill="#FAF1DD" stroke="#262D5E" stroke-width="4"/><circle cx="150" cy="150" r="105" fill="#2EB7B1" stroke="#262D5E" stroke-width="4"/><circle cx="150" cy="150" r="70" fill="#F1C84A" stroke="#262D5E" stroke-width="4"/><circle cx="150" cy="150" r="35" fill="#E64E77" stroke="#262D5E" stroke-width="4"/>${lab(28, "−20")}${lab(63, "−15")}${lab(98, "−10")}${lab(150, "−5")}</svg><svg id="xh" class="xh" viewBox="0 0 44 44" width="44" height="44"><circle cx="22" cy="22" r="14" fill="none" stroke="#262D5E" stroke-width="4"/><path d="M22 0V12M22 32V44M0 22H12M32 22H44" stroke="#262D5E" stroke-width="4"/><circle cx="22" cy="22" r="2.5" fill="#E8403A"/></svg></div><div class="sl-info" id="bz-res"></div><div id="bz-act" style="width:100%;max-width:340px"></div>`);
-    const pts = []; for (let i = 0; i < 5; i++) { const a = Math.random() * 6.283, r = R(0, 125); pts.push([150 + r * Math.cos(a), 150 + r * Math.sin(a)]); }
-    pts.push([tx, ty]);
-    const xh = $("#xh"), kf = pts.map(q => ({ transform: `translate(${q[0] - 22}px,${q[1] - 22}px)`, easing: "ease-in-out" }));
-    xh.style.transform = kf[kf.length - 1].transform;
-    xh.animate(kf, { duration: 3200 }).onfinish = () => {
-      if (!$("#bz-res")) return;
-      $(".bz-box").insertAdjacentHTML("beforeend", `<div class="bz-hit" style="left:${tx}px;top:${ty}px"></div>`);
-      const d = add(L.id, -VAL[ri]);
-      $("#bz-res").innerHTML = `<b style="font-size:30px">${fmt(d)}</b>`;
+    openLayer("", `<div class="ev-who" style="background:${L.color};font-size:26px;padding:8px 22px;box-shadow:0 0 0 4px #fff,0 0 26px 6px ${L.color}">${escapeHtml(L.name)}</div><div class="bz-box"><svg class="t" viewBox="0 0 300 300"><circle cx="150" cy="150" r="140" fill="#FAF1DD" stroke="#262D5E" stroke-width="4"/><circle cx="150" cy="150" r="105" fill="#2EB7B1" stroke="#262D5E" stroke-width="4"/><circle cx="150" cy="150" r="70" fill="#F1C84A" stroke="#262D5E" stroke-width="4"/><circle cx="150" cy="150" r="35" fill="#E64E77" stroke="#262D5E" stroke-width="4"/>${lab(28, "−20")}${lab(63, "−15")}${lab(98, "−10")}${lab(150, "−5")}</svg><svg id="xh" class="xh" viewBox="0 0 44 44" width="44" height="44"><circle cx="22" cy="22" r="14" fill="none" stroke="#262D5E" stroke-width="4"/><path d="M22 0V12M22 32V44M0 22H12M32 22H44" stroke="#262D5E" stroke-width="4"/><circle cx="22" cy="22" r="2.5" fill="#E8403A"/></svg></div><div class="sl-info" id="bz-res"></div><div id="bz-act" style="width:100%;max-width:340px"><button class="ev-btn bz-stop" id="bz-stop">FERMA</button></div>`);
+    // Mirino: parte vicino al centro, velocità crescente, traiettoria irregolare (tappe casuali, più spesso nelle zone esterne), senza rallentamenti
+    const xh = $("#xh"); let x = 150 + R(-10, 10), y = 150 + R(-10, 10), tx = x, ty = y, sf = 1, stopped = false, t0 = performance.now(), last = t0;
+    let ang = Math.random() * 6.283;
+    const target = () => {   // tappe irregolari: di solito curve nelle zone esterne, ogni tanto un attraversamento verso il lato opposto (centro incluso)
+      ang += Math.random() < 0.12 ? Math.PI + (Math.random() - 0.5) * 0.8 : (Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * 0.9);
+      const r = 138 * Math.pow(Math.random(), 0.25); tx = 150 + r * Math.cos(ang); ty = 150 + r * Math.sin(ang); sf = 0.7 + Math.random() * 0.8;
+    };
+    target();
+    const tick = (now) => {
+      if (stopped || !xh.isConnected) return;
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      const sp = Math.min(650, 150 + 48 * (now - t0) / 1000) * sf, dx = tx - x, dy = ty - y, d = Math.hypot(dx, dy), st = sp * dt;
+      if (d <= st) { x = tx; y = ty; target(); } else { x += dx / d * st; y += dy / d * st; }
+      xh.style.transform = `translate(${x - 22}px,${y - 22}px)`;
+      requestAnimationFrame(tick);
+    };
+    xh.style.transform = `translate(${x - 22}px,${y - 22}px)`;
+    requestAnimationFrame(tick);
+    $("#bz-stop").onclick = () => {
+      if (stopped) return; stopped = true;
+      const r = Math.hypot(x - 150, y - 150), pen = r < 35 ? 5 : r < 70 ? 10 : r < 105 ? 15 : 20;   // penalità dalla posizione effettiva del mirino
+      $(".bz-box").insertAdjacentHTML("beforeend", `<div class="bz-hit" style="left:${x}px;top:${y}px"></div>`);
+      const dd = add(L.id, -pen); ev.data.hit = { x, y, pen };
+      $("#bz-res").innerHTML = `<b style="font-size:30px">${fmt(dd)}</b>`;
       $("#bz-act").innerHTML = `<button class="ev-btn" id="ev-ok">Continua</button>`;
       $("#ev-ok").onclick = () => { closeLayer(); done(); };
     };
