@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 <title>Flip 7 Scorer</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#262D5E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Flip 7">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -4258,6 +4270,84 @@ input[type=number]{-moz-appearance:textfield;}
   syncSettingsUI();
   [settingsSheet, targetSheet, actionCardsSheet, modifierCardsSheet, specialCardsSheet, infoSheet, rulesSheet]
     .forEach(enableDragToClose);
+
+  /* ================= Salvataggio automatico e ripristino ================= */
+  const SAVE_KEY = "flip7.save", SAVE_VER = 1;
+  let saveEnabled = false, lastSaved = "", saveTimer = null;
+  const jsonRep = (k, v) => v instanceof Set ? { __set: Array.from(v) } : v;
+  const jsonRev = (k, v) => v && typeof v === "object" && Array.isArray(v.__set) ? new Set(v.__set) : v;
+  const activeScreen = () => Object.keys(screens).find(k => screens[k].classList.contains("active")) || "cover";
+  // Un salvataggio avviene solo in un punto "stabile": nessun evento/animazione aperto e nessuna chiusura round a metà.
+  // Se l'app si interrompe durante un evento, si riparte dall'ultimo punto stabile (prima che l'evento producesse effetti):
+  // l'evento già estratto resta lo stesso e nessun bonus/penalità viene applicato due volte.
+  function isStable() {
+    if (evBusy || layer.classList.contains("show")) return false;
+    if (gameSheet.classList.contains("show") && state.finishing) return false;
+    return true;
+  }
+  function saveNow(force) {
+    if (!saveEnabled || (!force && !isStable())) return;
+    const scr = activeScreen();
+    if (scr === "cover") return;
+    try {
+      const str = JSON.stringify({ v: SAVE_VER, savedAt: Date.now(), ui: { screen: scr, sheet: gameSheet.classList.contains("show") }, state }, jsonRep);
+      if (str === lastSaved) return;
+      localStorage.setItem(SAVE_KEY, str); lastSaved = str;
+    } catch (e) { /* storage pieno o non disponibile: l'app continua a funzionare */ }
+  }
+  const scheduleSave = () => { clearTimeout(saveTimer); saveTimer = setTimeout(() => saveNow(false), 80); };
+  ["click", "input", "change", "pointerup", "touchend", "keyup"].forEach(t => document.addEventListener(t, scheduleSave, true));
+  setInterval(() => saveNow(false), 1200);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") saveNow(false); });
+  window.addEventListener("pagehide", () => saveNow(false));
+  function loadSave() {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY); if (!raw) return null;
+      const d = JSON.parse(raw, jsonRev);
+      return d && d.v === SAVE_VER && d.state && Array.isArray(d.state.players) ? d : null;
+    } catch (e) { return null; }
+  }
+  function restoreGame(d) {
+    state = Object.assign(defaultState(), d.state);   // i campi aggiunti in versioni future dell'app ricevono i valori predefiniti
+    nextPlayerId = Math.max(3, ...state.players.map(p => p.id)) + 1;
+    evBusy = false; infoOpen = false;
+    const ui = d.ui || {};
+    if (ui.screen === "setup") { renderSetup(); showScreen("setup"); }
+    else if (ui.screen === "winner") { renderWinner(); showScreen("winner"); }
+    else {
+      renderScoreboard(); showScreen("scoreboard");
+      if (ui.sheet && state.round > 0 && state.turnOrder.length) { renderGameScreen(); openSheet(gameSheet); }
+    }
+    syncSettingsUI();
+  }
+  function bootResume() {
+    const d = loadSave();
+    if (!d) { saveEnabled = true; return; }
+    lastSaved = JSON.stringify(d, jsonRep);
+    const names = d.state.players.map(p => p.name).join(", ");
+    const info = d.ui && d.ui.screen === "setup" ? "Partita in preparazione" : `Round ${d.state.round}${d.ui && d.ui.screen === "winner" ? " · terminata" : ""}`;
+    const box = document.createElement("div");
+    box.style.cssText = "position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(20,24,52,.96);font-family:inherit";
+    box.innerHTML = `<div style="width:100%;max-width:340px;text-align:center;color:var(--cream)"><div style="font:800 30px/1.1 inherit;margin-bottom:8px">PARTITA SALVATA</div><div style="font-weight:700;opacity:.9;margin-bottom:4px">${info}</div><div style="opacity:.75;font-size:14px;margin-bottom:22px;word-break:break-word">${escapeHtml(names)}</div><button class="ev-btn" id="sv-resume" style="width:100%;margin-bottom:12px">RIPRENDI PARTITA</button><button class="ev-btn" id="sv-new" style="width:100%;opacity:.85">NUOVA PARTITA</button></div>`;
+    document.body.appendChild(box);
+    $("#sv-resume").onclick = () => { box.remove(); restoreGame(d); saveEnabled = true; };
+    $("#sv-new").onclick = () => {   // scelta esplicita: i dati precedenti vengono cancellati
+      try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+      lastSaved = ""; state = defaultState(); nextPlayerId = 4; box.remove(); saveEnabled = true;
+    };
+  }
+  bootResume();
+
+  /* ================= Orientamento verticale ================= */
+  // Dove supportato (Android/Chrome in PWA o a schermo intero) si blocca il portrait; su iOS non è consentito dal codice.
+  function lockPortrait() { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock("portrait").catch(() => {}); } catch (e) {} }
+  lockPortrait();
+  document.addEventListener("click", lockPortrait, { once: true });
+
+  /* ================= PWA: registrazione del service worker ================= */
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    window.addEventListener("load", () => { try { navigator.serviceWorker.register("./service-worker.js").catch(() => {}); } catch (e) {} });
+  }
 })();
 
 </script>
