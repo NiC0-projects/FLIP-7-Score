@@ -1,5 +1,5 @@
 /* Service worker di Flip 7. Per pubblicare un aggiornamento cambia CACHE_VERSION: le vecchie cache vengono eliminate. */
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const CACHE = "flip7-" + CACHE_VERSION;
 const CORE = [
   "./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png", "./icons/apple-touch-icon.png", "./icons/apple-touch-icon-152.png", "./icons/apple-touch-icon-167.png", "./icons/favicon-32.png", "./icons/favicon-16.png"];
