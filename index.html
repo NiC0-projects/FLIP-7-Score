@@ -3367,6 +3367,8 @@ input[type=number]{-moz-appearance:textfield;}
     if (e === "C") {
       const cand = ps.filter(p => p.total === (me.total === mx ? mn : mx)), a = me.total, b = cand[0].total;
       const wasFirst = me.total === mx;
+      const sa = ev.data.snap[pid], sb = ev.data.snap[cand[0].id];
+      ev.data.snap[pid] = sb; cand.forEach(o => { ev.data.snap[o.id] = sa; });   // Sacrificio: classifica di inizio round, con i giocatori scambiati come nello scambio
       me.total = b; cand.forEach(o => { o.total = a; });   // in caso di pari merito tutto il gruppo opposto prende il punteggio di chi attiva; gli altri pari merito di chi attiva non cambiano
       return showCard("SCAMBIO", wasFirst ? "Il primo diventa l’ultimo" : "L’ultimo diventa primo", [row(pid, 0, `${a} → ${b}`), ...cand.map(o => row(o.id, 0, `${b} → ${a}`))]);
     }
@@ -3893,8 +3895,9 @@ input[type=number]{-moz-appearance:textfield;}
         finishRound();
       }
     };
-    // Fenice: si attiva se il primo giocatore ha usato modificatori (indipendentemente dal risultato) o ha fatto bust
-    if (isFirst) phoenixCheck(bust || entry.mods.size > 0, proceed); else proceed();
+    // Fenice: si attiva solo se il primo giocatore ha sballato (nessuna carta numerica: risultato 0 o dato dai soli modificatori).
+    // Con carte numeriche e modificatori, anche se il totale è 0, NON si attiva.
+    if (isFirst) phoenixCheck(bust, proceed); else proceed();
   });
 
   function finishRound() {
